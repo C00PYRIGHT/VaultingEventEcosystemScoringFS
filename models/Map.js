@@ -43,4 +43,4 @@ const VaulterSchema = new mongoose.Schema({
 
 },{ timestamps: true });
 
-export default mongoose.model('vaulters', HorseSchema);
+export default mongoose.model('vaulters', MapSchema);

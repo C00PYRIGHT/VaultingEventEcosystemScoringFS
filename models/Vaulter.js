@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Horse from './Horse';
+import { type } from 'os';
 
 
 const VaulterSchema = new mongoose.Schema({
@@ -32,17 +33,18 @@ const VaulterSchema = new mongoose.Schema({
         ArmNr:{
             type: String,
             required: [true, 'Arm number required!'],
+        },  
+        VaulterIncident:{
+            type: [{
+                incidentType: { type: String, required: true, enum :['Injury', 'Withdraw ', 'Yellow card','Warning', 'Elimination', 'Disqualification', 'Other'] },
+                description: { type: String, required: true },
+                User: { type: mongoose.Schema.Types.ObjectId, ref:'users' ,required: true }, // User who reported the incident
+                date: { type: Date, default: Date.now },
+            }],
+            
         },
-        Horse:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'horses',
-            required: [true, 'Horse required!'],
-        },
-        Lunger:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'lunger',
-            required: [true, 'Lunger required!'],
-        },
+        
+
         
 },{ timestamps: true });
 

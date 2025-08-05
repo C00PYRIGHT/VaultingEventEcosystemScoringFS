@@ -22,4 +22,4 @@ const RoleSchema = new mongoose.Schema({
         },
 },{ timestamps: true });
 
-export default mongoose.model('roles', HorseSchema);
+export default mongoose.model('roles', RoleSchema);

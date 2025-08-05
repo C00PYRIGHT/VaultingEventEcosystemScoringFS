@@ -49,3 +49,5 @@ const ScoreSchema = new mongoose.Schema({
         required: [true, 'Score required!'],
     },
 },{ timestamps: true });
+
+export default mongoose.model('scores', ScoreSchema);
