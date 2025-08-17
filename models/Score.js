@@ -32,15 +32,9 @@ const ScoreSchema = new mongoose.Schema({
         ref: 'scheduleparts',
         required: [true, 'Schedule part required!'],
     },
-    scoresheet: {
+    scoresheets: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'scoressheet',
-    validate: {
-        validator: function (v) {
-        return v.length === 4 || v.length === 8;
-        },
-        message: props => `A scoresheet mezőnek 4 vagy 8 elemet kell tartalmaznia, de ${props.value.length} van.`,
-    },
     required: [true, 'Score required!'],
     },
 

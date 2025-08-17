@@ -1,0 +1,33 @@
+import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import logger from '../logger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
+async function connectDB() {
+    try {
+        // Adatbázis kapcsolódás
+        await mongoose.connect(process.env.MONGODB_URI);
+        logger.info('Successfully connected to MongoDB');
+        // Kapcsolat lezárása kilépéskor
+        process.on('SIGINT', async () => {
+            try {
+                await mongoose.disconnect();
+                logger.info('Connection to MongoDB closed.');
+                process.exit(0);
+            } catch (err) {
+                logger.error('Failed to connect to MongoDB:', err);
+                process.exit(1);
+            }
+        });
+    } catch (err) {
+        logger.error('Connection error:', err);
+        process.exit(1);
+    }
+}
+
+export default connectDB;

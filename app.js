@@ -1,1 +1,61 @@
-console.log('Hello, World!');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import router from './routes/routes.js';
+import adminRouter from './routes/adminRoutes.js';
+import connectDB from './database/db.js';
+import expressLayouts from 'express-ejs-layouts';
+import dotenv from 'dotenv';
+import session from 'express-session';
+import logger from './logger.js';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import formRouter from './routes/formRoutes.js';
+
+// Az aktuális fájl és könyvtár meghatározása
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express(); // Express.js keretrendszer inicializálása
+
+connectDB(); // Adatbázis-kapcsolódás
+
+// Middleware-ek beállítása
+app.set('views', path.join(__dirname, 'views')); // A 'views' könyvtár beállítása
+app.set('view engine', 'ejs'); // EJS sablonmotor beállítása
+app.use(expressLayouts); // Layout
+app.set('layout', 'layouts/layout'); // Layout könyvtár beállítása
+app.use(express.json()); // JSON formátumú adatok feldolgozása és elérhetősége a 'req.body' objektumon keresztül
+app.use(express.urlencoded({ extended: true })); // URL-en keresztül érkező, formázott adatok feldolgozása és elérhetősége a 'req.body' objektumon keresztül
+app.use(cors());
+app.disable("x-powered-by"); //Reduce fingerprinting
+app.use(cookieParser());
+app.use('/static', express.static(path.join(__dirname, '/static'))); // static könyvtár elérése
+dotenv.config({ path: path.join(__dirname, '.env') }); // A dotenv beállítása
+app.use((req, res, next) => {
+    logger.info(` ${req.method} ${req.url}`);
+    next();
+  });
+  
+app.use(session({
+    secret: 'APIkey',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use('/', router); // Útvonalak kezelése
+app.use('/forms', formRouter); // Admin útvonalak kezelése
+app.use('/admin', adminRouter); // Admin útvonalak kezelése
+app.use((req, res, next) => {
+    res.status(404).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 404
+    });
+});
+app.use((err, req, res, next) => {
+    logger.error(err);
+    res.status(500).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 500
+    });});
+
+
+const { URI, PORT, SECRET_ACCESS_TOKEN } = process.env;
+
+export { URI, PORT, SECRET_ACCESS_TOKEN };
+app.listen(process.env.PORT, logger.info(`A szerver fut a http://localhost:${process.env.PORT} címen...`));
