@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaultX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="icon" type="image/x-icon" href="/static/archive.svg">
+</head>
+<% if(userrole == "admin"){ %>
+    <nav>
+        <div class="container-fluid bg-dark text-light p-3">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
+                </a>
+
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="/admin/dashboard" class="m-2 btn btn-primary" id="adminbutton">Admin Dashboard</a>
+                    </li>
+                        <li class="nav-item">
+                        <a href="/admin/newUser" class="m-2 btn btn-primary d-none" id="newuserbutton"> Add new user</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/forms/newForm" class="m-2 btn btn-info">New form</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/dashboard" class="m-2 btn btn-primary d-none" id="dashboardbutton"> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/logout" class=" m-2 btn btn-danger">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<% }else if(userrole == "user"){ %>
+        <nav>
+        <div class="container-fluid bg-dark text-light p-3">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
+
+                </a>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="/newForm" class="m-2 btn btn-info">New form</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/logout" class="m-2 btn btn-danger">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<% }else{ %>
+<body>
+    <nav>
+        <div class="container-fluid bg-dark text-light p-3">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                <h1 class="h4">
+                <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
+
+                </h1>
+                </a>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+<% } %>
+<main class="container mb-5 my-5" style="padding-bottom: 80px;">
+    <%- body %>
+</main>
+
+    <footer>
+        <div class="container-fluid bg-dark text-light p-3 position-fixed bottom-0">
+            <div class="container d-flex justify-content-between align-items-center">
+                <p class="mb-0">VaultX &copy; 2025</p>
+                <p class="mb-0"><% if(userrole && userrole == "notlogged"){%><a href="/dashboard" class="me-4"><i class="bi bi-box-arrow-in-right"></i></a><%}%> <a href="/creators" class="text-light">Creators</a></p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>   
+     <script src="/static/main.js"></script>
+</body>
+
+</html>

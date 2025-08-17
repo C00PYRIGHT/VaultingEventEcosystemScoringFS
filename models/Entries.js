@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Vaulter from './Vaulter';
+import Vaulter from './Vaulter.js';
 
 
 const EntriesSchema = new mongoose.Schema({

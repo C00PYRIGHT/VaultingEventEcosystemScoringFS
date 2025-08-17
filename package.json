@@ -24,5 +24,19 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.10"
-    }
+    },
+    "name": "npm",
+    "version": "1.0.0",
+    "main": "app.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/C00PYRIGHT/VaultingEventEcosystemScoringFS.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/C00PYRIGHT/VaultingEventEcosystemScoringFS/issues"
+    },
+    "homepage": "https://github.com/C00PYRIGHT/VaultingEventEcosystemScoringFS#readme",
+    "description": ""
 }

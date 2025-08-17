@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './routes/routes.js';
-import adminRouter from './routes/adminRoutes.js';
+//import adminRouter from './routes/adminRoutes.js';
 import connectDB from './database/db.js';
 import expressLayouts from 'express-ejs-layouts';
 import dotenv from 'dotenv';
@@ -10,7 +10,6 @@ import session from 'express-session';
 import logger from './logger.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import formRouter from './routes/formRoutes.js';
 
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
@@ -43,8 +42,9 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use('/', router); // Útvonalak kezelése
-app.use('/forms', formRouter); // Admin útvonalak kezelése
-app.use('/admin', adminRouter); // Admin útvonalak kezelése
+//app.use('/forms', formRouter); // Admin útvonalak kezelése
+
+//app.use('/admin', adminRouter); // Admin útvonalak kezelése
 app.use((req, res, next) => {
     res.status(404).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 404
     });

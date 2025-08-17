@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import Horse from './Horse';
 
 
 const RoleSchema = new mongoose.Schema({
