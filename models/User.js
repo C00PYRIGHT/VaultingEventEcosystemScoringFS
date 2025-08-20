@@ -15,10 +15,12 @@ const userSchema = new mongoose.Schema({
         },
         feiid:{
             type: String,
-            required: [true, 'FEI-ID required!'],
+            minlength: [8, 'FEI ID must be at 8 characters!'],
+            maxlength: [8, 'FEI ID must be at 8 characters!'],
+            default: '00000000',
         unique: true,
         },
-       Role:{
+       role:{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'roles',
             required: [true, 'Role required!'],

@@ -1,0 +1,64 @@
+<h1 class="text-center mb-3">Add new user</h1>
+
+
+<form action="/admin/newUser" method="POST">
+    <div class="row justify-content-center g-3 w-50 m-auto">
+        <div class="col-lg-10">
+    <% if (failMessage) { %>
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
+        <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+            <%= failMessage %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        </div>
+    </div>
+    <% } %>
+        </div>
+        <div class="col-md-12">
+            <div class="form-floating">
+                <input type="text" class="form-control shadow-none" id="username" name="username" placeholder="Username"
+                    autocomplete="off" value="<%= formData ? formData.username : "" %>">
+                <label for="username" class="form-label">Username</label>
+            </div>
+        </div>
+       
+
+
+         <div class="col-md-12">
+            <div class="form-floating">
+                <input type="password" class="form-control shadow-none" id="password" name="password" placeholder="Password"
+                    autocomplete="off" value="<%= formData ? formData.password : "" %>">
+                <label for="password" class="form-label">Password</label>
+            </div>
+        </div>
+                 <div class="col-md-12">
+            <div class="form-floating">
+                <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="feiid"
+                    autocomplete="off" value="<%= formData ? formData.feiid : "" %>">
+                <label for="feiid" class="form-label">FEI ID</label>
+            </div>
+        </div>
+                <div class="col-md-12 ">
+            <div class="form-floating">
+                <select type="text" class="form-select shadow-none" id="role" name="role" placeholder="role"
+                    autocomplete="off" >
+                    <% roleList.forEach(Role => { %>
+                    <option value="<%= Role._id %>"  <%= formData && formData.role === Role._id ? "selected" : "" %>><%= Role.roleName %></option>
+                    <% }) %>
+
+
+                    
+                </select>
+                <label for="role" class="form-label">Role</label>
+            </div>
+                            <button type="submit" class="btn btn-primary mt-3 w-100">Add</button>
+
+        </div>
+
+
+
+
+</form>

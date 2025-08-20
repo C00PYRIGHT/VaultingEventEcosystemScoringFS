@@ -7,14 +7,13 @@ import Validate from "../middleware/Validate.js";
 import { check } from "express-validator";
 import { Verify, VerifyRole } from "../middleware/Verify.js";
 
-import bcrypt from "bcrypt";
 const router = express.Router();
 
 
 router.get("/", async (req, res) => {
     const fetchedforms = await Form.find();
     req.session.successMessage = null; // Üzenet törlése a session-ből
-    res.render("mainpage", { userrole: req.user?.role || "notlogged", forms : fetchedforms, successMessage: req.session.successMessage, failMessage: req.session.failMessage });
+    res.render("mainpage", { rolePermissons: req.user?.role.permissions, forms : fetchedforms, successMessage: req.session.successMessage, failMessage: req.session.failMessage });
 });
 
 
@@ -31,7 +30,7 @@ router.post(
 router.get("/login", (req, res) => {
     const failMessage = req.session.failMessage; // Üzenet beállítása a session-ből
     req.session.failMessage = null; // Üzenet törlése a session-ből
-    res.render("login", { failMessage, userrole: req.user?.role || "notlogged" });
+    res.render("login", { failMessage, rolePermissons: req.user?.role.permissions});
 });
 
 

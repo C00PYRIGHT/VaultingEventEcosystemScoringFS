@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"; // import jsonwebtoken to verify the access toke
 import User from "../models/User.js"; // import the User model
 import { SECRET_ACCESS_TOKEN } from "../app.js"; // import the secret access token from the app.js file
 import logger from "../logger.js"; // import the logger to log errors
+import RoleModel from "../models/Role.js"; // import the Role model if needed
 
 export async function Verify(req, res, next) {
     const cookieHeader = req.headers["cookie"];
@@ -45,7 +46,7 @@ export async function Verify(req, res, next) {
 
         const { id } = decoded;
 
-        const user = await User.findById(id);
+        const user = await User.findById(id).populate('role'); // Populate the role field with the role name
         if (!user) {
             logger.info("User not found for decoded token id: ", id);
             req.session.failMessage = "User not found for decoded token id";
@@ -64,20 +65,25 @@ export async function Verify(req, res, next) {
     }
 }
 
-export function VerifyRole(req, res, next) {
-    try {
-        const user = req.user; // we have access to the user object from the request
-        const { role } = user; // extract the user role
-        // check if user has no advance privileges
-        // return an unathorized response
-        if (role !== "admin") {
-            req.session.failMessage = "Unauthorized access. Admins only.";
+export function VerifyRole(neededPermission) {
+    return async function (req, res, next) {
+        try {
+            const user = req.user;
+            const { role } = user;
+            if (!role) {
+                req.session.failMessage = "User role not found.";
+                return res.redirect("/login");
+            }
+            const roleFromDB = await RoleModel.findById(role); // Use await and correct model
+            if (!roleFromDB || !roleFromDB.permissions.includes(neededPermission)) {
+                req.session.failMessage = "You do not have permission to access this resource.";
+                return res.redirect("/login");
+            }
+            next();
+        } catch (err) {
+            logger.error("Internal server error in VerifyRole middleware: ", err);
+            req.session.failMessage = "Internal server error.";
             return res.redirect("/login");
         }
-        next(); // continue to the next middleware or function
-    } catch (err) {
-        logger.error("Internal server error in VerifyRole middleware: ", err);
-        req.session.failMessage = "Internal server error.";
-        return res.redirect("/login");
-    }
+    };
 }

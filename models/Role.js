@@ -14,6 +14,7 @@ const RoleSchema = new mongoose.Schema({
         description:{
             type: String,
             default: '',
+            required: [true, 'Description required!'],
         },
         power:{
             type: Number,

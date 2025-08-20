@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Horse from './Horse';
+import Horse from './Horse.js';
 
 
 const LungerSchema = new mongoose.Schema({

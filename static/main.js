@@ -1,123 +1,85 @@
-import User from "../models/User.js";
-import bcrypt from "bcrypt";
-import Blacklist  from "../models/Blacklist.js";
-/**
- * @route POST v1/auth/register
- * @desc Registers a user
- * @access Public
- */
-export async function Register(req, res) {
-    // get required variables from request body
-    // using es6 object destructing
-    const { username , email, password } = req.body;
-    try {
-        // create an instance of a user
-        const newUser = new User({
-            username,
-            email,
-            password,
+document.addEventListener('DOMContentLoaded', () => {
+
+     const searchInput = document.getElementById('search');
+    const tableBody = document.getElementById('formTableBody');
+
+    searchInput?.addEventListener('input', fv => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const rows = tableBody.getElementsByTagName('tr');
+        Array.from(rows).forEach(row => {
+            const title = row.cells[0].textContent.toLowerCase();
+            const genre = row.cells[3].textContent.toLowerCase();
+            const chkboxChecked = document.getElementById('searchByGenre').checked;
+            row.style.display = (chkboxChecked ? genre.includes(searchTerm) : title.includes(searchTerm)) ? '' : 'none';
         });
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser){
-            req.session.failMessage =
-                "User already exists.";
-            return res.redirect("/admin/newUser");} // redirect to dashboard if user already exists
-        const savedUser = await newUser.save(); // save new user into the database
-        const { role, ...user_data } = savedUser._doc;
-        req.session.successMessage =
-            "User created successfully.";
-            res.redirect("/admin/dashboard"); // redirect to dashboard
-    } catch (err) {
-        console.error(err)
-        req.session.failMessage =
-                "User already exists. Please login to your account.";
-            return res.redirect("/admin/newUser"); // redirect to dashboard if user already exists
-     
-    }
-    res.end();
-}
+    }); 
 
 
-/**
- * @route POST v1/auth/login
- * @desc logs in a user
- * @access Public
- */
-export async function Login(req, res) {
-    // Get variables for the login process
-    const { username } = req.body;
-    try {
-        // Check if user exists
-        const user = await User.findOne({ username }).select("+password");
-        if (!user){
-            req.session.failMessage = "User not found";
-            return res.redirect("/login");
-        }
-        console.info("User: ", user.username);
+    const togglewatcheds = document.querySelectorAll('.togglewatched');
 
-        // if user exists
-        // validate password
-        const isPasswordValid = await bcrypt.compare(
-            `${req.body.password}`,
-            user.password
-        );
-        // if not valid, return unathorized response
-        if (!isPasswordValid)
-        {
-            req.session.failMessage = "Invalid username or password";
-            return res.redirect("/login");
-        }
-
-        let options = {
-            maxAge: 20 * 60 * 1000, // would expire in 20minutes
-            httpOnly: true, // The cookie is only accessible by the web server
-            secure: true,
-            sameSite: "None",
+    togglewatcheds.forEach(togglewatched => {
+        togglewatched.addEventListener('click', async fv => {
+            try{
+            const movieId = togglewatched.value;
+            const watched = togglewatched.checked;
+            const response = await fetch('/togglewatched/' + movieId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ watched }) 
+            });
+        }catch (error) {
+            console.error('Error toggling watched status:', error);
         };
-        const token = user.generateAccessJWT(); // generate session token for user
-        res.cookie("SessionID", token, options); // set the token to response header, so that the client sends it back on each subsequent request
-        return res.redirect("/dashboard"); // redirect to dashboard
-    } catch (err) {
-        res.status(500).json({
-            status: "error",
-            code: 500,
-            data: [],
-            message: "Internal Server Error",
-        });
-    }
-    res.end();
-}
+            });
+
+        
+    });
 
 
-/**
- * @route POST /auth/logout
- * @desc Logout user
- * @access Public
- */
-export async function Logout(req, res) {
-  try {
-    const authHeader = req.headers['cookie']; // get the session cookie from request header
-    if (!authHeader) return res.sendStatus(204); // No content
-    const cookie = authHeader.split('=')[1]; // If there is, split the cookie string to get the actual jwt token
-    const accessToken = cookie.split(';')[0];
-    const checkIfBlacklisted = await Blacklist.findOne({ token: accessToken }); // Check if that token is blacklisted
-    // if true, send a no content response.
-    if (checkIfBlacklisted) return res.sendStatus(204);
-    // otherwise blacklist token
-    const newBlacklist = new Blacklist({
-      token: accessToken,
-    });
-    await newBlacklist.save();
-    // Also clear request cookie on client
-    res.setHeader('Clear-Site-Data', '"cookies"');
-    return res.redirect('/login'); // redirect to home page
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal Server Error'+ err,
-    });
+
+
+
+
+    /* A Bootstrap Alert blokk eltüntetése */
+
+    const rowElement = document.getElementById('alert-row');
+    rowElement?.style && setTimeout(() => {
+        let opacity = 1;
+        const fadeOutInterval = setInterval(() => {
+            if (opacity <= 0) {
+                clearInterval(fadeOutInterval); // Animáció leállítása
+                rowElement.remove(); // Elem eltávolítása a DOM-ból
+            } else {
+                opacity -= 0.1;
+                rowElement.style.opacity = opacity;
+            }
+        }, 50); // 50ms intervallum a zökkenőmentes animációért
+    }, 4000); // 4 másodperces késleltetés
+
+  const successToastEl = document.getElementById('formSuccessToast');
+  if (successToastEl) {
+    const toast = new bootstrap.Toast(successToastEl, { delay: 3000 });
+    toast.show();
   }
-  res.end();
-}
+
+    const failToastEl = document.getElementById('formFailToast');
+    if (failToastEl) {
+      const toast = new bootstrap.Toast(failToastEl, { delay: 3000 });
+      toast.show();
+    }
+
+  
+
+
+
+
+
+
+
+
+
+
+
+});

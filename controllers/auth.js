@@ -9,31 +9,39 @@ import Blacklist  from "../models/Blacklist.js";
 export async function Register(req, res) {
     // get required variables from request body
     // using es6 object destructing
-    const { username , email, password } = req.body;
+    console.info("Registering user: ", req.body);
+    const { username , password,feiid, role } = req.body;
     try {
         // create an instance of a user
         const newUser = new User({
             username,
-            email,
             password,
+            feiid,
+            role
+            
         });
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ username });
+        console.info("Existing user: ", existingUser);
         if (existingUser){
+            req.session.formData = req.body; // Save form data to session
             req.session.failMessage =
                 "User already exists.";
             return res.redirect("/admin/newUser");} // redirect to dashboard if user already exists
         const savedUser = await newUser.save(); // save new user into the database
-        const { role, ...user_data } = savedUser._doc;
         req.session.successMessage =
             "User created successfully.";
-            res.redirect("/admin/dashboard"); // redirect to dashboard
+            res.redirect("/admin/dashboard/users"); // redirect to dashboard
     } catch (err) {
-        console.error(err)
-        req.session.failMessage =
-                "User already exists. Please login to your account.";
-            return res.redirect("/admin/newUser"); // redirect to dashboard if user already exists
-     
+        console.error(err.errors + req.body);
+        let message = "Server error. Please try again later.";
+        if (err.name === "ValidationError") {
+            // Get the first validation error message
+            message = Object.values(err.errors)[0].message;
+        }
+        req.session.failMessage = message;
+        
+        return res.redirect("/admin/newUser");
     }
     res.end();
 }

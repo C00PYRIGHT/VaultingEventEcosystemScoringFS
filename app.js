@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './routes/routes.js';
-//import adminRouter from './routes/adminRoutes.js';
+import adminRouter from './routes/adminRouter.js';
 import connectDB from './database/db.js';
 import expressLayouts from 'express-ejs-layouts';
 import dotenv from 'dotenv';
@@ -44,7 +44,7 @@ app.use(session({
 app.use('/', router); // Útvonalak kezelése
 //app.use('/forms', formRouter); // Admin útvonalak kezelése
 
-//app.use('/admin', adminRouter); // Admin útvonalak kezelése
+app.use('/admin', adminRouter); // Admin útvonalak kezelése
 app.use((req, res, next) => {
     res.status(404).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 404
     });
