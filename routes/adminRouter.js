@@ -11,6 +11,7 @@ import Role from "../models/Role.js"; // Import the Role model
 import User from "../models/User.js"; // Import the User model
 const adminRouter = express.Router();
 import bcrypt from 'bcrypt';
+import Permissions from '../models/Permissions.js';
 
 
 
@@ -151,8 +152,10 @@ adminRouter.get("/dashboard/roles", Verify, VerifyRole("manage_roles"), async (r
         res.status(500).send('Server Error');
     }
 });
-adminRouter.get("/newRole", Verify, VerifyRole("manage_roles"), (req, res) => {
+adminRouter.get("/newRole", Verify, VerifyRole("manage_roles"), async (req, res) => {
+    const permissions = await Permissions.find();
     res.render("admin/newRole", {
+        permissions: permissions,
         rolePermissons: req.user.role.permissions,
         failMessage: req.session.failMessage,
         formData: req.session.formData
@@ -183,14 +186,14 @@ adminRouter.post("/newRole", Verify, VerifyRole("manage_roles"), async (req, res
 adminRouter.get('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req, res) => {
     try {
         const roles = await Role.find();
-
+        const permissions = await Permissions.find();
         const role = await Role.findById(req.params.id);
         if (!role) {
             req.session.failMessage = 'Role not found.';
             return res.redirect('/admin/dashboard/roles');
         }
         res.render('admin/editRole', {
-            
+            permissions: permissions,
             rolePermissons: req.user.role.permissions,
             failMessage: req.session.failMessage,
             formData: role
@@ -205,6 +208,7 @@ adminRouter.get('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req,
 adminRouter.post('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req, res) => {
     try {
         const { roleName, description, permissions } = req.body;
+        
         const updatedRole = await Role.findByIdAndUpdate(req.params.id, {
             roleName,
             description,
@@ -247,6 +251,113 @@ adminRouter.delete('/deleteRole/:roleId', Verify, VerifyRole("manage_roles"), as
     } catch (err) {
         logger.error("Err:" + err.toString());
         res.status(500).send('Server Error');
+    }
+});
+
+// PERMISSION MANAGEMENT ROUTES
+adminRouter.get("/dashboard/permissions", Verify, VerifyRole("manage_permissions"), async (req, res) => {
+    try {
+        const permissions = await Permissions.find();
+        const RoleList = await Role.find();
+        const RolePermNumList = [];
+        for (const perm of permissions) {
+            let CountRolesbyPermissionId = 0;
+            for (const role of RoleList) {
+               if( role.permissions.includes(perm.name)){
+                    CountRolesbyPermissionId++;
+                }
+               
+            }
+            RolePermNumList.push({ permID: perm._id, count: CountRolesbyPermissionId });
+        }
+        res.render("admin/permdash", {
+            rolepermNumList: RolePermNumList,
+            rolePermissons: req.user.role.permissions,
+            permissions: permissions,
+            failMessage: req.session.failMessage,
+            successMessage: req.session.successMessage
+        });
+        req.session.failMessage = null; // Clear the fail message after rendering
+        req.session.successMessage = null; // Clear the success message after rendering
+
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send('Server Error');
+    }
+
+
+});
+adminRouter.get("/newPermission", Verify, VerifyRole("manage_permissions"), (req, res) => {
+    res.render("admin/newPerm", {
+        rolePermissons: req.user.role.permissions,
+        failMessage: req.session.failMessage,
+        formData: req.session.formData
+    });
+    req.session.formData = null; // Clear the form data after rendering
+    req.session.failMessage = null; // Clear the fail message after rendering
+});
+
+adminRouter.post("/newPermission", Verify, VerifyRole("manage_permissions"), async (req, res) => {
+    try {
+        console.log(req.body);
+        const {name, displayName, attachedURL, requestType } = req.body;
+        const newPermission = new Permissions({
+            name,
+            displayName,
+            attachedURL,
+            requestType
+        });
+        await newPermission.save();
+        req.session.successMessage = 'Permission created successfully.';
+        res.redirect('/admin/dashboard/permissions');
+    } catch (err) {
+        logger.error(err);
+        req.session.failMessage = 'Error creating permission. Please try again.';
+        req.session.formData = req.body; // Save form data to session
+        res.redirect('/admin/newPermission');
+    }
+});
+
+adminRouter.get('/editPermission/:id', Verify, VerifyRole("manage_permissions"), async (req, res) => {
+    try {
+        const permission = await Permissions.findById(req.params.id);
+        if (!permission) {
+            req.session.failMessage = 'Permission not found.';
+            return res.redirect('/admin/dashboard/permissions');
+        }
+        res.render('admin/editPerm', {
+            rolePermissons: req.user.role.permissions,
+            failMessage: req.session.failMessage,
+            formData: permission
+        });
+        req.session.failMessage = null;
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+adminRouter.post('/editPermission/:id', Verify, VerifyRole("manage_permissions"), async (req, res) => {
+    try {
+        const { name, displayName, attachedURL, requestType } = req.body;
+        const updatedPermission = await Permissions.findByIdAndUpdate(req.params.id, {
+            name,
+            displayName,
+            attachedURL,
+            requestType
+        }, { runValidators: true });
+
+        if (!updatedPermission) {
+            req.session.failMessage = 'Permission not found.';
+            return res.redirect('/admin/dashboard/permissions');
+        }
+
+        req.session.successMessage = 'Permission updated successfully.';
+        res.redirect('/admin/dashboard/permissions');
+    } catch (err) {
+        logger.error(err);
+        req.session.failMessage = 'Error updating permission. Please try again.';
+        res.redirect(`/admin/editPermission/${req.params.id}`);
     }
 });
 export default adminRouter;

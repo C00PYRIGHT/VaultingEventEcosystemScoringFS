@@ -42,16 +42,15 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use('/', router); // Útvonalak kezelése
-//app.use('/forms', formRouter); // Admin útvonalak kezelése
 
 app.use('/admin', adminRouter); // Admin útvonalak kezelése
 app.use((req, res, next) => {
-    res.status(404).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 404
+    res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404
     });
 });
 app.use((err, req, res, next) => {
     logger.error(err);
-    res.status(500).render("errorpage", {userrole: req.user?.role || "notlogged",errorCode: 500
+    res.status(500).render("errorpage", {rolePermissons: req.user?.role.permissions,errorCode: 500
     });});
 
 

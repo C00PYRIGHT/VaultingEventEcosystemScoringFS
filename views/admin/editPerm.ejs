@@ -1,0 +1,98 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-2 w-50 shadow p-3 bg-primary bg-opacity-10" >
+
+
+<h1 class="text-center mb-3">Add new Permission</h1>
+
+
+<form action="/admin/editPermission/<%= formData._id %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+        <div class="col-lg-10">
+    <% if (failMessage) { %>
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
+        <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+            <%= failMessage %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        </div>
+    </div>
+    <% } %>
+        </div>
+        <div class="col-md-12">
+            <div class="form-floating">
+                <input type="text" class="form-control shadow-none" id="name" name="name" placeholder="name"
+                    autocomplete="off" value="<%= formData ? formData.name : "" %>">
+                <label for="name" class="form-label">Name</label>
+            </div>
+        </div>
+       
+
+
+         <div class="col-md-12">
+            <div class="form-floating">
+                <input type="text" class="form-control shadow-none" id="displayName" name="displayName" placeholder="displayName"
+                    autocomplete="off" value="<%= formData ? formData.displayName : "" %>">
+                <label for="displayName" class="form-label">Display Name</label>
+            </div>
+        </div>
+
+
+
+
+
+
+
+        <div class="col-md-12 bg-secondary bg-opacity-10 p-3 rounded mt-3">
+  <label class="form-label mb-2">Attached URLs</label>
+  <div id="urlList"></div>
+
+  <button type="button" class="btn btn-sm btn-success mt-2" onclick="addUrlInput()">+ Add URL</button>
+</div>
+
+
+                            <button type="submit" class="btn btn-primary mt-3 w-100">Edit</button>
+
+        </div>
+
+        </div>
+
+
+
+</form>
+
+
+<script>
+  function addUrlInput(value = '') {
+    const urlList = document.getElementById('urlList');
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('input-group', 'mb-2');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'attachedURL'; // backend tömbként kapja
+    input.classList.add('form-control');
+    input.placeholder = 'Enter URL';
+    input.value = value;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('btn', 'btn-danger');
+    btn.textContent = 'Remove';
+    btn.onclick = () => wrapper.remove();
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(btn);
+
+    urlList.appendChild(wrapper);
+  }
+
+  // --- visszatöltés EJS-ből ---
+  <% if (formData && formData.attachedURL) { %>
+    <% formData.attachedURL.forEach(function(url) { %>
+      addUrlInput("<%= url %>");
+    <% }) %>
+  <% } %>
+</script>
