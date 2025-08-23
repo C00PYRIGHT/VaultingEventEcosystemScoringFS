@@ -1,0 +1,127 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-2 w-75 shadow p-3 bg-primary bg-opacity-10">
+
+  <h1 class="text-center mb-3">Edit Dashboard Card</h1>
+
+  <form action="/admin/editCard/<%= formData?._id %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+      
+      <!-- Dashboard type -->
+      <div class="col-md-12">
+        <label for="dashtype" class="form-label">Dashboard Type</label>
+        <select id="dashtype" name="dashtype" class="form-select shadow-none">
+          <option value="admin" <%= formData?.dashtype === "admin" ? "selected" : "" %>>Admin</option>
+          <option value="user" <%= formData?.dashtype === "user" ? "selected" : "" %>>User</option>
+        </select>
+      </div>
+                  <!-- Priority -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="number" class="form-control shadow-none" id="priority" name="priority" placeholder="priority" max="100" min="1"
+            value="<%= formData?.priority || '' %>">
+          <label for="priority">Priority</label>
+        </div>
+      </div>
+
+      <!-- Style -->
+      <div class="col-md-12">
+        <label for="style" class="form-label">Style</label>
+        <select id="style" name="style" class="form-select shadow-none">
+            <option value="primary"   <%= formData?.style === "primary" ? "selected" : "" %>>Primary</option>
+            <option value="secondary" <%= formData?.style === "secondary" ? "selected" : "" %>>Secondary</option>
+            <option value="success"   <%= formData?.style === "success" ? "selected" : "" %>>Success</option>
+            <option value="danger"    <%= formData?.style === "danger" ? "selected" : "" %>>Danger</option>
+            <option value="warning"   <%= formData?.style === "warning" ? "selected" : "" %>>Warning</option>
+            <option value="info"      <%= formData?.style === "info" ? "selected" : "" %>>Info</option>
+            <option value="dark"      <%= formData?.style === "dark" ? "selected" : "" %>>Dark</option>
+
+        </select>
+      </div>
+
+        <div class="col-md-12">
+        <label for="perm" class="form-label">Permission</label>
+        <select id="perm" name="perm" class="form-select shadow-none">
+              <% permissionList.forEach(permission => { %>
+                    <option value="<%= permission.name %>"  <%= formData && formData.perm === permission.name ? "selected" : "" %>><%= permission.displayName %></option>
+                    <% }) %>
+        </select>
+      </div>
+
+
+
+      <!-- Title -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="title" name="title" placeholder="Title"
+            value="<%= formData?.title || '' %>">
+          <label for="title">Title</label>
+        </div>
+      </div>
+
+      <!-- Text -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="text" name="text" placeholder="Text"
+            value="<%= formData?.text || '' %>">
+          <label for="text">Text</label>
+        </div>
+      </div>
+
+      <!-- Links (tömb) -->
+      <div class="col-md-12 bg-secondary bg-opacity-10 p-3 rounded mt-3">
+        <label class="form-label mb-2">Links</label>
+        <div id="linkList"></div>
+        <button type="button" class="btn btn-sm btn-success mt-2" onclick="addLinkInput()">+ Add Link</button>
+      </div>
+
+      <!-- Submit -->
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-primary mt-3 w-100">Edit Card</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<script>
+function addLinkInput(href = '', label = '') {
+  const linkList = document.getElementById('linkList');
+
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('mb-2', 'd-flex', 'gap-2');
+
+  const hrefInput = document.createElement('input');
+  hrefInput.type = 'text';
+  hrefInput.name = 'href[]';
+  hrefInput.placeholder = 'Link Href';
+  hrefInput.classList.add('form-control');
+  hrefInput.value = href;
+
+  const labelInput = document.createElement('input');
+  labelInput.type = 'text';
+  labelInput.name = 'label[]';
+  labelInput.placeholder = 'Link Label';
+  labelInput.classList.add('form-control');
+  labelInput.value = label;
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Remove';
+  btn.classList.add('btn', 'btn-danger');
+  btn.onclick = () => wrapper.remove();
+
+  wrapper.appendChild(hrefInput);
+  wrapper.appendChild(labelInput);
+  wrapper.appendChild(btn);
+
+  linkList.appendChild(wrapper);
+}
+
+// --- visszatöltés EJS-ből ---
+<% if (formData?.label) { %>
+  <% for( let index = 0; index < formData.label.length; index++ ) { %>
+        addLinkInput("<%= formData.href[index] %>", "<%= formData.label[index] %>");
+
+<% } %>
+  
+<% } %>
+</script>

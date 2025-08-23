@@ -84,14 +84,14 @@ export async function Login(req, res) {
             sameSite: "None",
         };
         const token = user.generateAccessJWT(); // generate session token for user
-        res.cookie("SessionID", token, options); // set the token to response header, so that the client sends it back on each subsequent request
+        res.cookie("token", token, options); // set the token to response header, so that the client sends it back on each subsequent request
         return res.redirect("/dashboard"); // redirect to dashboard
     } catch (err) {
         res.status(500).json({
             status: "error",
             code: 500,
             data: [],
-            message: "Internal Server Error",
+            message: "Internal Server Error at Login: "+ err,
         });
     }
     res.end();

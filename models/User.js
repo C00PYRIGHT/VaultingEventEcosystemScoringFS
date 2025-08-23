@@ -49,7 +49,7 @@ userSchema.methods.generateAccessJWT = function () {
     id: this._id,
   };
   return jwt.sign(payload, SECRET_ACCESS_TOKEN, {
-    expiresIn: '7d',
+    expiresIn: '20m',
   });
 };
 const User = mongoose.model('users', userSchema);

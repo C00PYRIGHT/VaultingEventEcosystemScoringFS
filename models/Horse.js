@@ -13,6 +13,7 @@ const HorseSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
+    required: [ true, 'Gender required!'],
   },
   Bdate: {
     type: Date,

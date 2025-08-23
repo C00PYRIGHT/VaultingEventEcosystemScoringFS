@@ -1,0 +1,30 @@
+<div class="container my-4 w-75">
+  <div class="p-3 mb-4 bg-primary bg-opacity-10 border border-1 border-black border-opacity-10 rounded text-center">
+    <h2>VaultX  Dashboard</h2>
+  </div>
+
+  <div class="row g-4 text-center">
+    <%
+      // Például itt definiálod a kártya "adatbázist"
+      const allCards = cardsFromDB; // Feltételezve, hogy ez egy tömb objektumokkal
+
+      // Ha nincs rolePermissons, legyen üres tömb
+      const permissons = typeof rolePermissons !== "undefined" ? rolePermissons : [];
+    %>
+
+    <% allCards.forEach(card => { %>
+      <% if (Array.isArray(permissons) && permissons.includes(card.perm)) { %>
+        <div class="col-md-4">
+          <div class="p-4 bg-<%= card.style %> bg-opacity-10 border border-1 border-black border-opacity-10 rounded h-100 d-flex flex-column justify-content-between">
+            <h5><%= card.title %></h5>
+            <p><%= card.text %></p>
+            <% for( let index = 0; index < card.label.length; index++ ) { %>
+            
+              <a href="<%= card.href[index] %>" class="btn btn-outline-<%= card.style %> w-100 mb-3"><%= card.label[index] %></a>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    <% }) %>
+  </div>
+</div>

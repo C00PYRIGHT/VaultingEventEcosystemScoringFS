@@ -7,18 +7,7 @@
 <form action="/admin/editRole/<%= formData._id %>" method="POST">
     <div class="row justify-content-center g-3  m-auto">
         <div class="col-lg-10">
-    <% if (failMessage) { %>
-    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
-        <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body">
-            <%= failMessage %>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        </div>
-    </div>
-    <% } %>
+
         </div>
         <div class="col-md-12">
             <div class="form-floating">
@@ -39,36 +28,26 @@
             </div>
         </div>
         
-        <div class="col-md-12">
+       <div class="col-md- bg-secondary bg-opacity-10 p-3 rounded">
             <label class="form-label mb-2">Permissions</label>
             <div class="row">
-                <% 
-                // Permission dictionary: key = value sent to backend, value = display text
-                const permissionDict = {
-                    "manage_users": "Manage Users",
-                    "view_reports": "View Reports",
-                    "edit_events": "Edit Events",
-                    "admin_dashboard": "Admin Dashboard",
-                    "manage_roles": "Manage Roles"
-                    // Add more as needed
-                };
-                const selected = formData && formData.permissions ? formData.permissions : [];
-                Object.entries(permissionDict).forEach(([permValue, permLabel]) => { 
-                %>
+                <% const selected = formData && formData.permissions ? formData.permissions : [];
+                permissions.forEach(permission => { %>
                 <div class="col-md-6 col-lg-4 mb-2">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" 
                                name="permissions" 
-                               value="<%= permValue %>" 
-                               id="perm_<%= permValue %>"
-                               <%= selected.includes(permValue) ? "checked" : "" %>>
-                        <label class="form-check-label" for="perm_<%= permValue %>">
-                            <%= permLabel %>
+                               value="<%= permission.name %>" 
+                               id="perm_<%= permission.name %>"
+                               <%= selected.includes(permission.name) ? "checked" : "" %>>
+                        <label class="form-check-label" for="perm_<%= permission.name %>">
+                            <%= permission.displayName %>
                         </label>
                     </div>
                 </div>
                 <% }); %>
             </div>
+        
         </div>
                             <button type="submit" class="btn btn-primary mt-3 w-100">Update</button>
 

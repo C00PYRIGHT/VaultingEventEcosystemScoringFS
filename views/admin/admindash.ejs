@@ -1,42 +1,30 @@
-<% if (successMessage) { %>
-  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
-    <div id="formSuccessToast" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <%= successMessage %>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-<% } %>
-<% if (failMessage) { %>
-  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
-    <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <%= failMessage %>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-<% } %>
-
-
 <div class="container my-4 w-75">
-  <h2 class="text-center">Admin Dashboard</h2>
-  <ul class="list-group">
+  <div class="p-3 mb-4 bg-primary bg-opacity-10 border border-1 border-black border-opacity-10 rounded text-center">
+    <h2>VaultX Admin Dashboard</h2>
+  </div>
 
-    <li class="list-group-item">
-      <a href="/admin/dashboard/users" class="btn btn-outline-secondary w-100">User List</a>
-    </li>
-    <li class="list-group-item">
-      <a href="/admin/dashboard/roles" class="btn btn-outline-primary w-100">Role management</a>
-    </li>
-        <li class="list-group-item">
-      <a href="/admin/dashboard/permissions" class="btn btn-outline-dark w-100">Permissions management</a>
-    </li>
+  <div class="row g-4 text-center">
+    <%
+      // Például itt definiálod a kártya "adatbázist"
+      const allCards = cardsFromDB; // Feltételezve, hogy ez egy tömb objektumokkal
 
-  </ul>
+      // Ha nincs rolePermissons, legyen üres tömb
+      const permissons = typeof rolePermissons !== "undefined" ? rolePermissons : [];
+    %>
+
+    <% allCards.forEach(card => { %>
+      <% if (Array.isArray(permissons) && permissons.includes(card.perm)) { %>
+        <div class="col-md-4">
+          <div class="p-4 bg-<%= card.style %> bg-opacity-10 border border-1 border-black border-opacity-10 rounded h-100 d-flex flex-column justify-content-between">
+            <h5><%= card.title %></h5>
+            <p><%= card.text %></p>
+            <% for( let index = 0; index < card.label.length; index++ ) { %>
+            
+              <a href="<%= card.href[index] %>" class="btn btn-outline-<%= card.style %> w-100 mb-3"><%= card.label[index] %></a>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    <% }) %>
+  </div>
 </div>

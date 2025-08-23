@@ -1,39 +1,34 @@
-<% if (successMessage) { %>
-  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
-    <div id="formSuccessToast" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <%= successMessage %>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-<% } %>
-<% if (failMessage) { %>
-  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
-    <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <%= failMessage %>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-<% } %>
+
   <div class="container my-4 border border-black border-1 border-opacity-25 rounded p-2" >
   <ul class="list-group">
 
     <li class="list-group-item border-0">
         <h3 class="text-center">Role Management</h3>
-      <a href="/admin/newRole" class="btn btn-outline-primary w-100">Create New Role</a>
     </li>
     
   </ul>
+<div class="d-flex justify-content-start align-items-center w-100 shadow-sm p-1 mb-4 bg-secondary bg-opacity-25 rounded border border-1 border-black border-opacity-10 flex-grow-1">
+    <div class="w-50 d-flex m-1 ">
+        <form class="form-inline w-75 "id="noSubmitForm">
+          <input class="form-control mr-sm-2 rounded-0 rounded-start-1 border " type="search" placeholder="Search" aria-label="Search" id="search">
+        </form>
+        <div class="dropdown w-50 ">
+            <button class="btn btn-primary dropdown-toggle rounded-0 rounded-end-1 " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Select column
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdownMenu">
 
 
-<table class="table table-striped table-hover table-bordered w-100 m-0">
+            </div>
+
+        </div>
+  </div>
+        <a href="/admin/newRole" class="btn btn-outline-primary w-50">Create New Role</a>
+
+  </div>
+
+
+<table class="table table-striped table-hover table-bordered w-100 m-0" id="TableBody">
         <thead class="table-primary">
             <th scope="col">Name</th>
             <th scope="col">Permissions</th>

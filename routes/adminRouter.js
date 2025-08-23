@@ -12,18 +12,13 @@ import User from "../models/User.js"; // Import the User model
 const adminRouter = express.Router();
 import bcrypt from 'bcrypt';
 import Permissions from '../models/Permissions.js';
+import DashCards from '../models/DashCards.js';
 
 
 
 
 
 
-/*router.get("/dashboard", Verify, async (req, res) => {
-    const forms = await Form.find();
-    req.session.successMessage = null; // Üzenet törlése a session-ből  
-    req.session.failMessage = null; // Üzenet törlése a session-ből
-    res.render("dashboard", {userrole: req.user.role, forms, successMessage: req.session.successMessage, failMessage: req.session.failMessage });
-});*/
 adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) => {
     const roles = await Role.find();
     const userrole = req.user?.role.permissions; // Safe check for req.user
@@ -31,8 +26,10 @@ adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) =
         rolePermissons: userrole,
         failMessage: req.session.failMessage,
         formData: req.session.formData,
-        roleList: roles
+        roleList: roles,
+        successMessage: req.session.successMessage
     });
+    req.session.successMessage = null;
     req.session.formData = null;
     req.session.failMessage = null;
 });
@@ -63,7 +60,14 @@ adminRouter.get("/dashboard/users", Verify, VerifyRole("manage_users"), async (r
 adminRouter.get('/editUser/:id',Verify,VerifyRole("manage_users"), async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        res.render('admin/editUser', {failMessage: req.session.failMessage, formData: user,userrole: req.user.role,roleList: await Role.find(),rolePermissons: req.user.role.permissions }); 
+        res.render('admin/editUser', {failMessage: req.session.failMessage, 
+            formData: user,userrole: req.user.role,
+            roleList: await Role.find(),
+            rolePermissons: req.user.role.permissions,
+            successMessage: req.session.successMessage});
+        req.session.failMessage = null; // Clear the fail message after rendering
+        req.session.successMessage = null; // Clear the success message after rendering
+
     } catch (err) {
         logger.error(err);
         res.status(500).send('Server Error');
@@ -94,8 +98,10 @@ adminRouter.post('/editUser/:id',Verify,VerifyRole("manage_users") , async (req,
                 formData: req.body,
                 successMessage: null,
                 failMessage: errorMessage,
+                
                 user: { ...req.body, _id: req.params.id }
             });
+            
         }
         logger.error(err);
         res.status(500).send('Server Error');
@@ -106,6 +112,10 @@ adminRouter.post('/editUser/:id',Verify,VerifyRole("manage_users") , async (req,
 adminRouter.get("/dashboard", Verify,VerifyRole("admin_dashboard"), async (req, res) => {
     const rolePermissons = req.user.role.permissions; // Safe check for req.user
     res.render("admin/admindash", {
+        cardsFromDB: await DashCards.find({ dashtype: 'admin' }).sort({ priority: 1 }),
+        userCount: await User.countDocuments(),
+        permissionCount: await Permissions.countDocuments(),
+        roleCount: await Role.countDocuments(),
         rolePermissons: rolePermissons,
         failMessage: req.session.failMessage,
         successMessage: req.session.successMessage
@@ -159,9 +169,11 @@ adminRouter.get("/newRole", Verify, VerifyRole("manage_roles"), async (req, res)
         rolePermissons: req.user.role.permissions,
         failMessage: req.session.failMessage,
         formData: req.session.formData
+        ,successMessage: req.session.successMessage
     });
     req.session.formData = null; // Clear the form data after rendering
     req.session.failMessage = null; // Clear the fail message after rendering
+    req.session.successMessage = null; // Clear the success message after rendering
 });
 
 adminRouter.post("/newRole", Verify, VerifyRole("manage_roles"), async (req, res) => {
@@ -196,8 +208,10 @@ adminRouter.get('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req,
             permissions: permissions,
             rolePermissons: req.user.role.permissions,
             failMessage: req.session.failMessage,
+            successMessage: req.session.successMessage,
             formData: role
         });
+        req.session.successMessage = null; // Clear the success message after rendering
         req.session.failMessage = null; // Clear the fail message after rendering
     } catch (err) {
         logger.error(err);
@@ -291,8 +305,10 @@ adminRouter.get("/newPermission", Verify, VerifyRole("manage_permissions"), (req
     res.render("admin/newPerm", {
         rolePermissons: req.user.role.permissions,
         failMessage: req.session.failMessage,
-        formData: req.session.formData
+        formData: req.session.formData,
+        successMessage: req.session.successMessage
     });
+    req.session.successMessage = null;
     req.session.formData = null; // Clear the form data after rendering
     req.session.failMessage = null; // Clear the fail message after rendering
 });
@@ -329,8 +345,10 @@ adminRouter.get('/editPermission/:id', Verify, VerifyRole("manage_permissions"),
             rolePermissons: req.user.role.permissions,
             failMessage: req.session.failMessage,
             formData: permission
+            ,successMessage: req.session.successMessage
         });
         req.session.failMessage = null;
+        req.session.successMessage = null; // Clear the success message after rendering
     } catch (err) {
         logger.error(err);
         res.status(500).send('Server Error');
@@ -360,4 +378,145 @@ adminRouter.post('/editPermission/:id', Verify, VerifyRole("manage_permissions")
         res.redirect(`/admin/editPermission/${req.params.id}`);
     }
 });
+adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) => {
+    const roles = await Role.find();
+    const userrole = req.user?.role.permissions; // Safe check for req.user
+    res.render("admin/newUser", {
+        rolePermissons: userrole,
+        failMessage: req.session.failMessage,
+        formData: req.session.formData,
+        roleList: roles,
+        successMessage: req.session.successMessage
+    });
+    req.session.successMessage = null;
+    req.session.formData = null;
+    req.session.failMessage = null;
+});
+adminRouter.post(
+    "/newUser", 
+    Verify,
+    VerifyRole("manage_users"),
+    Validate,
+    Register
+);
+
+
+
+// CARD DASHBOARD ROUTES
+adminRouter.get("/newCard",Verify,VerifyRole("manage_users"), async (req, res) => {
+    const userrole = req.user?.role.permissions; // Safe check for req.user
+    const permissionList = await Permissions.find();
+    res.render("admin/newCard", {
+        permissionList: permissionList,
+        rolePermissons: userrole,
+        failMessage: req.session.failMessage,
+        formData: req.session.formData,
+        successMessage: req.session.successMessage
+    });
+    req.session.successMessage = null;
+    req.session.formData = null;
+    req.session.failMessage = null;
+});
+
+adminRouter.get("/dashboard/cards", Verify, VerifyRole(""), async (req, res) => {
+    const cards = await DashCards.find();
+    const rolePermissons = req.user.role.permissions; // Safe check for req.user
+
+    res.render("admin/carddash", {
+
+        rolePermissons: rolePermissons,
+        cards: cards,
+        failMessage: req.session.failMessage,
+        successMessage: req.session.successMessage
+    });
+    req.session.failMessage = null; // Clear the fail message after rendering
+    req.session.successMessage = null; // Clear the success message after rendering
+
+});
+adminRouter.get('/editCard/:id',Verify,VerifyRole("manage_users"), async (req, res) => {
+    try {
+        const permissionList = await Permissions.find();
+        const card = await DashCards.findById(req.params.id);
+        res.render('admin/editCard', {failMessage: req.session.failMessage, 
+            permissionList: permissionList,
+            formData: card,
+            failMessage: req.session.failMessage,
+            rolePermissons: req.user.role.permissions,
+            successMessage: req.session.successMessage});
+        req.session.failMessage = null; // Clear the fail message after rendering
+        req.session.successMessage = null; // Clear the success message after rendering
+
+    } catch (err) {
+        logger.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+adminRouter.post('/newCard', Verify, VerifyRole("manage_users"), async (req, res) => {
+  try {
+    const newCard = new DashCards(req.body);
+
+    await newCard.save();
+    req.session.successMessage = 'Card added successfully!';
+    res.redirect('/admin/dashboard/cards');
+
+    
+  } catch (err) {
+    console.error(err);
+
+    const errorMessage = err.errors
+      ? Object.values(err.errors).map(e => e.message).join(' ')
+      : 'Server error';
+
+    return res.render('admin/newCard', {
+        permissionList: await Permissions.find(),
+      formData: req.body,
+      successMessage: null,
+      failMessage: errorMessage,
+      card: { ...req.body, _id: req.params.id }
+    });
+    
+  }
+});
+
+adminRouter.post('/editCard/:id', Verify, VerifyRole("manage_users"), async (req, res) => {
+  try {
+    await DashCards.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
+
+    req.session.successMessage = 'Card modified successfully!';
+    res.redirect('/admin/dashboard/cards');
+
+  } catch (err) {
+    console.error(err);
+
+    const errorMessage = err.errors
+      ? Object.values(err.errors).map(e => e.message).join(' ')
+      : 'Server error';
+
+    return res.render('admin/editCard', {
+        permissionList: await Permissions.find(),
+      formData: req.body,
+      successMessage: null,
+      failMessage: errorMessage,
+      card: { ...req.body, _id: req.params.id }
+    });
+  }
+});
+
+
+
+
+
+adminRouter.delete('/deleteCard/:cardId', Verify,VerifyRole("manage_users"), async (req, res) => {
+    try {
+        const CardId = req.params.cardId;
+        await DashCards.findByIdAndDelete(CardId);
+        req.session.successMessage = 'Card successfully deleted.';
+        res.status(200).send('Card deleted.');
+    } catch (err) {
+        logger.error("Err:" +err.toString());
+        res.status(500).send('Server Error');
+    }
+    
+});
+
 export default adminRouter;

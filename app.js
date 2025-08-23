@@ -37,20 +37,28 @@ app.use((req, res, next) => {
   });
   
 app.use(session({
-    secret: 'APIkey',
-    resave: false,
-    saveUninitialized: false
+  secret: 'APIkey',            // titkos kulcs a session-hoz
+  resave: false,                // csak ha változott a session, mentsük
+  saveUninitialized: false,     // üres session-t ne mentsünk
+  cookie: { 
+    maxAge: 24 * 60 * 60 * 1000, // opcionális, pl. 1 nap
+    httpOnly: true,
+    secure: false,             // élesben: true
+    sameSite: 'lax'
+  }
 }));
 app.use('/', router); // Útvonalak kezelése
 
 app.use('/admin', adminRouter); // Admin útvonalak kezelése
 app.use((req, res, next) => {
-    res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404
+    res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404, failMessage: req.session.failMessage,
+            successMessage: req.session.successMessage
     });
 });
 app.use((err, req, res, next) => {
     logger.error(err);
-    res.status(500).render("errorpage", {rolePermissons: req.user?.role.permissions,errorCode: 500
+    res.status(500).render("errorpage", {rolePermissons: req.user?.role.permissions,errorCode: 500, failMessage: req.session.failMessage,
+            successMessage: req.session.successMessage
     });});
 
 

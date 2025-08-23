@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="hu">
+<style>
+  #search:focus {
+    outline: none;       /* Alap kék fókusz keret eltüntetése */
+    box-shadow: none;    /* Bootstrap glow eltüntetése */
+  }
+  mark {
+    all: unset;            /* minden stílust töröl */
+    background-color: yellow; /* megtartod a színt */
+}
 
+
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +19,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <link rel="icon" type="image/x-icon" href="/static/archive.svg">
+    <link rel="icon" type="image/x-icon" href="/static/VaultXLogo.png">
 </head>
     <nav>
         <div class="container-fluid bg-dark text-light p-3">
             <div class="container d-flex justify-content-between align-items-center">
-                <a href="/" style="text-decoration: none; color: inherit;">
+                <a href="/dashboard" style="text-decoration: none; color: inherit;">
                 <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
                 </a>
 
@@ -28,11 +39,10 @@
                         <a href="/admin/dashboard" class="m-2 btn btn-secondary" id=""> Admin Dashboard</a>
                     </li>
                     <% } %>
-                    <% if (Array.isArray(permissons) && permissons.includes("manage_roles")) { %>
                         <li class="nav-item">
                         <a href="/dashboard" class="m-2 btn btn-primary" id="newuserbutton"> Dashboard</a>
                     </li>
-                    <% } %>
+                    
                     <% if ((Array.isArray(permissons) && permissons.length !== 0) ) { %>
                         <li class="nav-item">
                             <a href="/logout" class="m-2 btn btn-danger">Logout</a>
@@ -45,6 +55,32 @@
 
 
 <main class="container mb-5 my-5" style="padding-bottom: 80px;">
+
+<% if (successMessage) { %>
+  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
+    <div id="formSuccessToast" class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <%= successMessage %>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+<% } %>
+<% if (failMessage) { %>
+  <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
+    <div id="formFailToast" class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <%= failMessage %>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+<% } %>
+
     <%- body %>
 </main>
 
@@ -54,9 +90,12 @@
                 <p class="mb-0">VaultX &copy; 2025</p>
                 <p class="mb-0"> <a href="/creators" class="text-light">Creators</a></p>
     </footer>
-    
+           <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>   
      <script src="/static/main.js"></script>
+
 </body>
 
 </html>
