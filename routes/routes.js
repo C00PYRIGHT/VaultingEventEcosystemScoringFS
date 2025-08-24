@@ -16,7 +16,6 @@ router.get("/", async (req, res) => {
 
 });
 router.dashboard = router.get("/dashboard", Verify, async (req, res) => {
-    console.log(await DashCards.find({ dashtype: 'user' }).sort({ priority: 1 }));
     req.session.successMessage = null; // Üzenet törlése a session-ből  
     req.session.failMessage = null; // Üzenet törlése a session-ből
     res.render("dashboard", {userrole: req.user.role, 

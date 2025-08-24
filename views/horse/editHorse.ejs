@@ -1,0 +1,128 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3  shadow bg-primary bg-opacity-10 " style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Edit Horse</h1>
+
+  <form action="/horse/edit/<%= formData ? formData._id : '' %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+      
+      <!-- Horse Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Horsename" name="Horsename" placeholder="Horse Name"
+                 value="<%= formData ? formData.Horsename : '' %>" autocomplete="off">
+          <label for="Horsename">Horse Name</label>
+        </div>
+      </div>
+
+      <!-- FEI ID -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="FEI ID"
+                 value="<%= formData ? formData.feiid : '' %>" autocomplete="off">
+          <label for="feiid">FEI ID</label>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="Male" <%= formData && formData.gender === 'Male' ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= formData && formData.gender === 'Female' ? 'selected' : '' %>>Female</option>
+          </select>
+          <label for="gender">Gender</label>
+        </div>
+      </div>
+
+      <!-- Birthdate -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="date" class="form-control shadow-none" id="Bdate" name="Bdate"
+            value="<%= formData && formData.Bdate ? new Date(formData.Bdate).toISOString().split('T')[0] : '' %>">
+          <label for="Bdate">Birthdate</label>
+        </div>
+      </div>
+
+      <!-- Nationality -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Nationality" name="Nationality" placeholder="Nationality"
+                 value="<%= formData ? formData.Nationality : '' %>">
+          <label for="Nationality">Nationality</label>
+        </div>
+      </div>
+
+      <!-- Vet Check Status -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="VetCheckStatus" name="VetCheckStatus">
+            <option value="">Select Vet Check Status</option>
+            <option value="before" <%= formData && formData.VetCheckStatus === 'before' ? 'selected' : '' %>>Before</option>
+            <option value="passed" <%= formData && formData.VetCheckStatus === 'passed' ? 'selected' : '' %>>Passed</option>
+            <option value="failed" <%= formData && formData.VetCheckStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+            <option value="pending" <%= formData && formData.VetCheckStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="holding" <%= formData && formData.VetCheckStatus === 'holding' ? 'selected' : '' %>>Holding</option>
+            <option value="reinspection" <%= formData && formData.VetCheckStatus === 'reinspection' ? 'selected' : '' %>>Reinspection</option>
+            <option value="withdrawn" <%= formData && formData.VetCheckStatus === 'withdrawn' ? 'selected' : '' %>>Withdrawn</option>
+            <option value="ToBeFollowed" <%= formData && formData.VetCheckStatus === 'ToBeFollowed' ? 'selected' : '' %>>To Be Followed</option>
+          </select>
+          <label for="VetCheckStatus">Vet Check Status</label>
+        </div>
+      </div>
+
+      <!-- Horse Status -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="HorseStatus" name="HorseStatus">
+            <option value="">Select Horse Status</option>
+            <option value="active" <%= formData && formData.HorseStatus === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= formData && formData.HorseStatus === 'inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
+          <label for="HorseStatus">Horse Status</label>
+        </div>
+      </div>
+
+      <!-- Box Number -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="BoxNr" name="BoxNr" placeholder="Box Number"
+                 value="<%= formData ? formData.BoxNr : '' %>">
+          <label for="BoxNr">Box Number</label>
+        </div>
+      </div>
+
+      <!-- Head Number -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="HeadNr" name="HeadNr" placeholder="Head Number"
+                 value="<%= formData ? formData.HeadNr : '' %>">
+          <label for="HeadNr">Head Number</label>
+        </div>
+      </div>
+
+      <!-- Responsible Person Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="ResponsiblePersonName" name="ResponsiblePersonName" placeholder="Responsible Person Name"
+                 value="<%= formData ? formData.ResponsiblePersonName : '' %>">
+          <label for="ResponsiblePersonName">Responsible Person Name</label>
+        </div>
+      </div>
+
+      <!-- Responsible Person Contact -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="ResponsiblePersonContact" name="ResponsiblePersonContact" placeholder="Responsible Person Contact"
+                 value="<%= formData ? formData.ResponsiblePersonContact : '' %>">
+          <label for="ResponsiblePersonContact">Responsible Person Contact</label>
+        </div>
+      </div>
+
+
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">Edit Horse</button>
+      </div>
+
+    </div>
+  </form>
+</div>

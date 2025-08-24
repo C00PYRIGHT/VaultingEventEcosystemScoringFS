@@ -1,0 +1,283 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10 " style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Horse Details</h1>
+
+  <form action="/horse/new" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+      
+      <!-- Horse Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Horsename" name="Horsename" placeholder="Horse Name" disabled
+                 value="<%= formData ? formData.Horsename : '' %>" autocomplete="off">
+          <label for="Horsename">Horse Name</label>
+        </div>
+      </div>
+
+      <!-- FEI ID -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="FEI ID" disabled
+                 value="<%= formData ? formData.feiid : '' %>" autocomplete="off">
+          <label for="feiid">FEI ID</label>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="gender" name="gender" placeholder="Gender" disabled
+                 value="<%= formData ? formData.gender : '' %>">
+          <label for="Gender">Gender</label>
+        </div>
+      </div>
+
+      <!-- Birthdate -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="date" class="form-control shadow-none" id="Bdate" name="Bdate" disabled
+            value="<%= formData && formData.Bdate ? new Date(formData.Bdate).toISOString().split('T')[0] : '' %>">
+          <label for="Bdate">Birthdate</label>
+        </div>
+      </div>
+
+      <!-- Nationality -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Nationality" name="Nationality" placeholder="Nationality" disabled
+                 value="<%= formData ? formData.Nationality : '' %>">
+          <label for="Nationality">Nationality</label>
+        </div>
+      </div>
+
+      <!-- Vet Check Status -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="VetCheckStatus" name="VetCheckStatus" placeholder="Vet Check Status" disabled
+                 value="<%= formData ? formData.VetCheckStatus : '' %>">
+          <label for="VetCheckStatus">Vet Check Status</label>
+        </div>
+      </div>
+     
+      <!-- Horse Status -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="HorseStatus" name="HorseStatus" placeholder="Horse Status" disabled
+                 value="<%= formData ? formData.HorseStatus : '' %>">
+          <label for="HorseStatus">Horse Status</label>
+        </div>
+      </div>
+
+
+
+      <!-- Box Number -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="BoxNr" name="BoxNr" placeholder="Box Number" disabled
+                 value="<%= formData ? formData.BoxNr : '' %>">
+          <label for="BoxNr">Box Number</label>
+        </div>
+      </div>
+
+      <!-- Head Number -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="HeadNr" name="HeadNr" placeholder="Head Number" disabled
+                 value="<%= formData ? formData.HeadNr : '' %>">
+          <label for="HeadNr">Head Number</label>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="col-md-12 bg-secondary bg-opacity-10 rounded p-3 " style="max-width: 97%;" >
+        <label class="form-label mb-2">Notes</label>
+        <div id="NoteList"></div>
+        <a type="button" class="btn btn-sm btn-success mt-2" id="addNote">+ Add Note</a>
+      </div>
+
+      <!-- Responsible Person Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="ResponsiblePersonName" name="ResponsiblePersonName" placeholder="Responsible Person Name" disabled
+                 value="<%= formData ? formData.ResponsiblePersonName : '' %>">
+          <label for="ResponsiblePersonName">Responsible Person Name</label>
+        </div>
+      </div>
+
+      <!-- Responsible Person Contact -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="ResponsiblePersonContact" name="ResponsiblePersonContact" placeholder="Responsible Person Contact" disabled
+                 value="<%= formData ? formData.ResponsiblePersonContact : '' %>">
+          <label for="ResponsiblePersonContact">Responsible Person Contact</label>
+        </div>
+      </div>
+
+      <!-- Edit button -->
+      <div class="col-md-12 mt-3">
+        <a class="btn btn-primary w-100" href="/horse/edit/<%= formData._id %>">Edit horse</a>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+
+<!-- Note Modal -->
+<div class="modal fade" id="NoteModal" tabindex="-1" role="dialog" aria-labelledby="NoteModalLabel"
+    aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="NoteModalLabel">Add Note</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/horse/newNote/<%= formData ? formData._id : '' %>" id="NoteModalForm" method="POST">
+              <div class="col-md-12">
+                  <div class="form-floating">
+                    <input type="text" class="form-control shadow-none" id="note" name="note" placeholder="note" required>                    
+                    <label for="note">Note</label>
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmNoteModalButton">Add</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- View Note Modal -->
+<div class="modal fade" id="NoteViewModal" tabindex="-1" aria-labelledby="NoteViewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="NoteViewModalLabel">Note details</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Note:</strong></p>
+        <pre id="noteContent" class="bg-light p-2 rounded"></pre>
+        <p class="mt-3"><strong>Timestamp:</strong> <span id="noteTimestamp"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmNoteModalButton = document.getElementById('confirmNoteModalButton');
+    const addNoteButton = document.getElementById('addNote');
+    const bsNoteModal = new bootstrap.Modal(document.getElementById('NoteModal'));
+    const Noteform = document.getElementById('NoteModalForm');
+
+    addNoteButton?.addEventListener('click', event => {
+        event.preventDefault();
+        bsNoteModal.show();
+
+    });
+
+    confirmNoteModalButton?.addEventListener('click', () => {
+        fetch(Noteform?.getAttribute('action'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                note: document.getElementById('note').value
+            })
+        }).then(() => window.location.reload());
+    });
+});
+</script>
+
+<script>
+  function addUrlInput(value = '', timestamp = '') {
+    const urlList = document.getElementById('NoteList');
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('input-group', 'mb-2', 'd-flex', 'gap-2');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'Note';
+    input.classList.add('form-control');
+    input.placeholder = 'Enter Note';
+    input.value = value;
+    input.disabled = true;
+
+    const input1 = document.createElement('input');
+    input1.type = 'text';
+    input1.name = 'Timestamp';
+    input1.classList.add('form-control');
+    input1.placeholder = 'Timestamp';
+    input1.value = timestamp;
+    input1.disabled = true;
+
+    const viewBtn = document.createElement('button');
+    viewBtn.type = 'button';
+    viewBtn.classList.add('btn', 'btn-info');
+    const zoomicon = document.createElement('i');
+    zoomicon.classList.add('bi')
+    zoomicon.classList.add('bi-search');
+    viewBtn.appendChild(zoomicon)
+
+    viewBtn.onclick = () => showNotePopup(input.value, input1.value);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('btn', 'btn-danger');
+    const trashicon = document.createElement('i');
+    trashicon.classList.add('bi')
+    trashicon.classList.add('bi-trash');
+    btn.appendChild(trashicon)
+    btn.onclick = () => removeNote(wrapper);
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(input1);
+    wrapper.appendChild(viewBtn);
+    wrapper.appendChild(btn);
+
+    urlList.appendChild(wrapper);
+  }
+
+  function removeNote(parentElement) {
+    fetch('/horse/deleteNote/<%= formData ? formData._id : '' %>', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            note: parentElement.querySelector('input[name="Note"]').value,
+            timestamp: parentElement.querySelector('input[name="Timestamp"]').value
+        })
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                window.location.reload();
+            }
+        });
+    
+  }
+
+  function showNotePopup(noteText, timestamp) {
+    document.getElementById('noteContent').textContent = noteText;
+    document.getElementById('noteTimestamp').textContent = timestamp;
+    const modal = new bootstrap.Modal(document.getElementById('NoteViewModal'));
+    modal.show();
+  }
+
+  <% if (formData && formData.Notes) { %>
+    <% formData.Notes.forEach(function(note) { %>
+      addUrlInput(
+        "<%= note.note %>", 
+        "<%= new Date(note.timestamp).toLocaleString('hu-HU', {timeZone: 'Europe/Budapest'}) %>"
+      );
+    <% }) %>
+  <% } %>
+</script>

@@ -19,7 +19,7 @@ import DashCards from '../models/DashCards.js';
 
 
 
-adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get("/newUser",Verify,VerifyRole(), async (req, res) => {
     const roles = await Role.find();
     const userrole = req.user?.role.permissions; // Safe check for req.user
     res.render("admin/newUser", {
@@ -36,13 +36,13 @@ adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) =
 adminRouter.post(
     "/newUser", 
     Verify,
-    VerifyRole("manage_users"),
+    VerifyRole(),
     Validate,
     Register
 );
 
 
-adminRouter.get("/dashboard/users", Verify, VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get("/dashboard/users", Verify, VerifyRole(), async (req, res) => {
     const users = await User.find().populate('role', 'roleName'); // Populate the Role field with the role name
     const rolePermissons = req.user.role.permissions; // Safe check for req.user
 
@@ -57,7 +57,7 @@ adminRouter.get("/dashboard/users", Verify, VerifyRole("manage_users"), async (r
     req.session.successMessage = null; // Clear the success message after rendering
 
 });
-adminRouter.get('/editUser/:id',Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get('/editUser/:id',Verify,VerifyRole(), async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         res.render('admin/editUser', {failMessage: req.session.failMessage, 
@@ -74,7 +74,7 @@ adminRouter.get('/editUser/:id',Verify,VerifyRole("manage_users"), async (req, r
     }
 });
 
-adminRouter.post('/editUser/:id',Verify,VerifyRole("manage_users") , async (req, res) => {
+adminRouter.post('/editUser/:id',Verify,VerifyRole() , async (req, res) => {
     try {
         const updateData = { ...req.body };
         if (req.body.password=== '') {
@@ -83,7 +83,6 @@ adminRouter.post('/editUser/:id',Verify,VerifyRole("manage_users") , async (req,
         }else{
             updateData.password = await bcrypt.hash(req.body.password, 10);
         }
-        console.log(updateData);
         await User.findByIdAndUpdate(req.params.id, updateData, { runValidators: true });
         req.session.successMessage = 'User modified successfully!';
         res.redirect('/admin/dashboard/users');
@@ -109,7 +108,7 @@ adminRouter.post('/editUser/:id',Verify,VerifyRole("manage_users") , async (req,
 });
 
 
-adminRouter.get("/dashboard", Verify,VerifyRole("admin_dashboard"), async (req, res) => {
+adminRouter.get("/dashboard", Verify,VerifyRole(), async (req, res) => {
     const rolePermissons = req.user.role.permissions; // Safe check for req.user
     res.render("admin/admindash", {
         cardsFromDB: await DashCards.find({ dashtype: 'admin' }).sort({ priority: 1 }),
@@ -125,7 +124,7 @@ adminRouter.get("/dashboard", Verify,VerifyRole("admin_dashboard"), async (req, 
 }); 
 
 
-adminRouter.delete('/deleteUser/:userId', Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.delete('/deleteUser/:userId', Verify,VerifyRole(), async (req, res) => {
     try {
         const UserId = req.params.userId;
         await User.findByIdAndDelete(UserId);
@@ -139,7 +138,7 @@ adminRouter.delete('/deleteUser/:userId', Verify,VerifyRole("manage_users"), asy
 
 
 //ROLE MANAGEMENT ROUTES
-adminRouter.get("/dashboard/roles", Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.get("/dashboard/roles", Verify, VerifyRole(), async (req, res) => {
     try {
                 const roles = await Role.find();
 
@@ -162,7 +161,7 @@ adminRouter.get("/dashboard/roles", Verify, VerifyRole("manage_roles"), async (r
         res.status(500).send('Server Error');
     }
 });
-adminRouter.get("/newRole", Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.get("/newRole", Verify, VerifyRole(), async (req, res) => {
     const permissions = await Permissions.find();
     res.render("admin/newRole", {
         permissions: permissions,
@@ -176,7 +175,7 @@ adminRouter.get("/newRole", Verify, VerifyRole("manage_roles"), async (req, res)
     req.session.successMessage = null; // Clear the success message after rendering
 });
 
-adminRouter.post("/newRole", Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.post("/newRole", Verify, VerifyRole(), async (req, res) => {
     try {
         const { roleName, description, permissions } = req.body;
         const newRole = new Role({
@@ -195,7 +194,7 @@ adminRouter.post("/newRole", Verify, VerifyRole("manage_roles"), async (req, res
     }
 });
 
-adminRouter.get('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.get('/editRole/:id', Verify, VerifyRole(), async (req, res) => {
     try {
         const roles = await Role.find();
         const permissions = await Permissions.find();
@@ -219,7 +218,7 @@ adminRouter.get('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req,
     }
 });
 
-adminRouter.post('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.post('/editRole/:id', Verify, VerifyRole(), async (req, res) => {
     try {
         const { roleName, description, permissions } = req.body;
         
@@ -243,7 +242,7 @@ adminRouter.post('/editRole/:id', Verify, VerifyRole("manage_roles"), async (req
     }
 }); 
 
-adminRouter.delete('/deleteRole/:roleId', Verify, VerifyRole("manage_roles"), async (req, res) => {
+adminRouter.delete('/deleteRole/:roleId', Verify, VerifyRole(), async (req, res) => {
     try {
         const roleId = req.params.roleId;
         const role = await Role.findById(roleId);
@@ -269,7 +268,7 @@ adminRouter.delete('/deleteRole/:roleId', Verify, VerifyRole("manage_roles"), as
 });
 
 // PERMISSION MANAGEMENT ROUTES
-adminRouter.get("/dashboard/permissions", Verify, VerifyRole("manage_permissions"), async (req, res) => {
+adminRouter.get("/dashboard/permissions", Verify, VerifyRole(), async (req, res) => {
     try {
         const permissions = await Permissions.find();
         const RoleList = await Role.find();
@@ -301,7 +300,7 @@ adminRouter.get("/dashboard/permissions", Verify, VerifyRole("manage_permissions
 
 
 });
-adminRouter.get("/newPermission", Verify, VerifyRole("manage_permissions"), (req, res) => {
+adminRouter.get("/newPermission", Verify, VerifyRole(), (req, res) => {
     res.render("admin/newPerm", {
         rolePermissons: req.user.role.permissions,
         failMessage: req.session.failMessage,
@@ -313,9 +312,8 @@ adminRouter.get("/newPermission", Verify, VerifyRole("manage_permissions"), (req
     req.session.failMessage = null; // Clear the fail message after rendering
 });
 
-adminRouter.post("/newPermission", Verify, VerifyRole("manage_permissions"), async (req, res) => {
+adminRouter.post("/newPermission", Verify, VerifyRole(), async (req, res) => {
     try {
-        console.log(req.body);
         const {name, displayName, attachedURL, requestType } = req.body;
         const newPermission = new Permissions({
             name,
@@ -334,7 +332,7 @@ adminRouter.post("/newPermission", Verify, VerifyRole("manage_permissions"), asy
     }
 });
 
-adminRouter.get('/editPermission/:id', Verify, VerifyRole("manage_permissions"), async (req, res) => {
+adminRouter.get('/editPermission/:id', Verify, VerifyRole(), async (req, res) => {
     try {
         const permission = await Permissions.findById(req.params.id);
         if (!permission) {
@@ -355,7 +353,7 @@ adminRouter.get('/editPermission/:id', Verify, VerifyRole("manage_permissions"),
     }
 });
 
-adminRouter.post('/editPermission/:id', Verify, VerifyRole("manage_permissions"), async (req, res) => {
+adminRouter.post('/editPermission/:id', Verify, VerifyRole(), async (req, res) => {
     try {
         const { name, displayName, attachedURL, requestType } = req.body;
         const updatedPermission = await Permissions.findByIdAndUpdate(req.params.id, {
@@ -378,7 +376,7 @@ adminRouter.post('/editPermission/:id', Verify, VerifyRole("manage_permissions")
         res.redirect(`/admin/editPermission/${req.params.id}`);
     }
 });
-adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get("/newUser",Verify,VerifyRole(), async (req, res) => {
     const roles = await Role.find();
     const userrole = req.user?.role.permissions; // Safe check for req.user
     res.render("admin/newUser", {
@@ -395,7 +393,7 @@ adminRouter.get("/newUser",Verify,VerifyRole("manage_users"), async (req, res) =
 adminRouter.post(
     "/newUser", 
     Verify,
-    VerifyRole("manage_users"),
+    VerifyRole(),
     Validate,
     Register
 );
@@ -403,7 +401,7 @@ adminRouter.post(
 
 
 // CARD DASHBOARD ROUTES
-adminRouter.get("/newCard",Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get("/newCard",Verify,VerifyRole(), async (req, res) => {
     const userrole = req.user?.role.permissions; // Safe check for req.user
     const permissionList = await Permissions.find();
     res.render("admin/newCard", {
@@ -418,7 +416,7 @@ adminRouter.get("/newCard",Verify,VerifyRole("manage_users"), async (req, res) =
     req.session.failMessage = null;
 });
 
-adminRouter.get("/dashboard/cards", Verify, VerifyRole(""), async (req, res) => {
+adminRouter.get("/dashboard/cards", Verify, VerifyRole(), async (req, res) => {
     const cards = await DashCards.find();
     const rolePermissons = req.user.role.permissions; // Safe check for req.user
 
@@ -433,7 +431,7 @@ adminRouter.get("/dashboard/cards", Verify, VerifyRole(""), async (req, res) => 
     req.session.successMessage = null; // Clear the success message after rendering
 
 });
-adminRouter.get('/editCard/:id',Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.get('/editCard/:id',Verify,VerifyRole(), async (req, res) => {
     try {
         const permissionList = await Permissions.find();
         const card = await DashCards.findById(req.params.id);
@@ -451,7 +449,7 @@ adminRouter.get('/editCard/:id',Verify,VerifyRole("manage_users"), async (req, r
         res.status(500).send('Server Error');
     }
 });
-adminRouter.post('/newCard', Verify, VerifyRole("manage_users"), async (req, res) => {
+adminRouter.post('/newCard', Verify, VerifyRole(), async (req, res) => {
   try {
     const newCard = new DashCards(req.body);
 
@@ -478,7 +476,7 @@ adminRouter.post('/newCard', Verify, VerifyRole("manage_users"), async (req, res
   }
 });
 
-adminRouter.post('/editCard/:id', Verify, VerifyRole("manage_users"), async (req, res) => {
+adminRouter.post('/editCard/:id', Verify, VerifyRole(), async (req, res) => {
   try {
     await DashCards.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
 
@@ -506,7 +504,7 @@ adminRouter.post('/editCard/:id', Verify, VerifyRole("manage_users"), async (req
 
 
 
-adminRouter.delete('/deleteCard/:cardId', Verify,VerifyRole("manage_users"), async (req, res) => {
+adminRouter.delete('/deleteCard/:cardId', Verify,VerifyRole(), async (req, res) => {
     try {
         const CardId = req.params.cardId;
         await DashCards.findByIdAndDelete(CardId);

@@ -76,7 +76,7 @@ function urlsMatch(pattern, actual) {
     });
 }
 
-export function VerifyRole(neededPermission) {
+export function VerifyRole() {
     return async function (req, res, next) {
         try {
             const user = req.user;

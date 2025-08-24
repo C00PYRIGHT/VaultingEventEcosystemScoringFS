@@ -10,6 +10,7 @@ import session from 'express-session';
 import logger from './logger.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import horseRouter from './routes/horseRouter.js';
 
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
@@ -50,6 +51,8 @@ app.use(session({
 app.use('/', router); // Útvonalak kezelése
 
 app.use('/admin', adminRouter); // Admin útvonalak kezelése
+app.use('/horse', horseRouter); // Admin útvonalak kezelése
+
 app.use((req, res, next) => {
     res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404, failMessage: req.session.failMessage,
             successMessage: req.session.successMessage

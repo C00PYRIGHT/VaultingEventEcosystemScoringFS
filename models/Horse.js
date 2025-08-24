@@ -10,6 +10,7 @@ const HorseSchema = new mongoose.Schema({
     type: String,
     required: [true, 'FEI-ID required!'],
     unique: true,
+    match: [/^\d{8}$/, 'FEI-ID must be exactly 8 digits!'],
   },
   gender: {
     type: String,
@@ -33,13 +34,7 @@ const HorseSchema = new mongoose.Schema({
     enum: ['active', 'inactive'],
     default: 'active',
   },
-  Temp: {
-    type: [{
-      value: { type: Number, required: true },
-      timestamp: { type: Date, default: Date.now },
-    }],
-    default: [],
-  },
+
   BoxNr: {
     type: String,
     required: [true, 'Box number required!'],
