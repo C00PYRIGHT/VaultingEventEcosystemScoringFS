@@ -33,11 +33,7 @@ app.disable("x-powered-by"); //Reduce fingerprinting
 app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, '/static'))); // static könyvtár elérése
 dotenv.config({ path: path.join(__dirname, '.env') }); // A dotenv beállítása
-app.use((req, res, next) => {
-    logger.info(` ${req.method} ${req.url}`);
-    next();
-  });
-  
+
 app.use(session({
   secret: 'APIkey',            // titkos kulcs a session-hoz
   resave: false,                // csak ha változott a session, mentsük
@@ -49,21 +45,35 @@ app.use(session({
     sameSite: 'lax'
   }
 }));
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    const userInfo = req.user ? req.user.username || req.user._id : 'Anonymous';
+    logger.info(
+      `${req.method} ${req.originalUrl} - ${req.ip} - User-Agent: ${req.get('User-Agent')} - User: ${userInfo}`
+    );
+  });
+  next();
+});
+
 app.use('/', router); // Útvonalak kezelése
 
 app.use('/admin', adminRouter); // Admin útvonalak kezelése
 app.use('/horse', horseRouter); // Admin útvonalak kezelése
 
+  
 app.use((req, res, next) => {
-    res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404, failMessage: req.session.failMessage,
+    res.status(404).render("errorpage", {rolePermissons: req.user?.role?.permissions,errorCode: 404, failMessage: req.session.failMessage, user:req.user,
             successMessage: req.session.successMessage
     });
+    next();
 });
 app.use((err, req, res, next) => {
     logger.error(err);
-    res.status(500).render("errorpage", {rolePermissons: req.user?.role.permissions,errorCode: 500, failMessage: req.session.failMessage,
+    res.status(500).render("errorpage", {rolePermissons: req.user?.role.permissions,errorCode: 500, failMessage: req.session.failMessage,user:req.user,
             successMessage: req.session.successMessage
-    });});
+    });
+    next();
+});
 
 
 
