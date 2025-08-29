@@ -22,15 +22,15 @@
         </div>
       </div>
 
-      <!-- Gender -->
+      <!-- Sex -->
       <div class="col-md-12">
         <div class="form-floating">
-          <select class="form-select shadow-none" id="gender" name="gender">
-            <option value="">Select Gender</option>
-            <option value="Male" <%= formData && formData.gender === 'Male' ? 'selected' : '' %>>Male</option>
-            <option value="Female" <%= formData && formData.gender === 'Female' ? 'selected' : '' %>>Female</option>
+          <select class="form-select shadow-none" id="sex" name="sex">
+            <option value="">Select Sex</option>
+            <option value="Male" <%= formData && formData.sex === 'Male' ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= formData && formData.sex === 'Female' ? 'selected' : '' %>>Female</option>
           </select>
-          <label for="gender">Gender</label>
+          <label for="sex">Sex</label>
         </div>
       </div>
 
@@ -43,14 +43,19 @@
         </div>
       </div>
 
-      <!-- Nationality -->
       <div class="col-md-12">
         <div class="form-floating">
-          <input type="text" class="form-control shadow-none" id="Nationality" name="Nationality" placeholder="Nationality"
-                 value="<%= formData ? formData.Nationality : '' %>">
-          <label for="Nationality">Nationality</label>
+        <select class="form-select shadow-none" id="Nationality" name="Nationality">
+          <option value="">-- Select federation --  --</option>
+          <% countries.forEach(country => { %>
+            <option value="<%= country %>" <%= formData && formData.Nationality === country ? "selected" : "" %>>
+              <%= country %>
+            </option>
+          <% }) %>
+        </select>
+        <label for="Nationality">Federations</label>
         </div>
-      </div>
+        </div>
 
       <!-- Vet Check Status -->
       <div class="col-md-12">

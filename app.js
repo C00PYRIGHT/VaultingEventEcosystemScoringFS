@@ -19,6 +19,7 @@ const __dirname = path.dirname(__filename);
 const app = express(); // Express.js keretrendszer inicializálása
 
 connectDB(); // Adatbázis-kapcsolódás
+const { URI, PORT, SECRET_ACCESS_TOKEN } = process.env;
 
 // Middleware-ek beállítása
 app.set('views', path.join(__dirname, 'views')); // A 'views' könyvtár beállítása
@@ -44,7 +45,7 @@ app.use(session({
   cookie: { 
     maxAge: 24 * 60 * 60 * 1000, // opcionális, pl. 1 nap
     httpOnly: true,
-    secure: false,             // élesben: true
+    secure: true,             // élesben: true
     sameSite: 'lax'
   }
 }));
@@ -65,7 +66,6 @@ app.use((err, req, res, next) => {
     });});
 
 
-const { URI, PORT, SECRET_ACCESS_TOKEN } = process.env;
 
 export { URI, PORT, SECRET_ACCESS_TOKEN };
 app.listen(process.env.PORT, logger.info(`A szerver fut a http://localhost:${process.env.PORT} címen...`));

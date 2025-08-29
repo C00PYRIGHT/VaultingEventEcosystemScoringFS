@@ -9,6 +9,16 @@
     all: unset;            /* minden stílust töröl */
     background-color: yellow; /* megtartod a színt */
 }
+.nav-link {
+
+  display: block;
+  padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+  font-size: var(--bs-nav-link-font-size);
+  font-weight: var(--bs-nav-link-font-weight);
+  text-decoration: none;
+  
+  border: 0;
+}
 
 
 </style>
@@ -21,37 +31,48 @@
     
     <link rel="icon" type="image/x-icon" href="/static/VaultXLogo.png">
 </head>
-    <nav>
-        <div class="container-fluid bg-dark text-light p-3">
-            <div class="container d-flex justify-content-between align-items-center">
-                <a href="/dashboard" style="text-decoration: none; color: inherit;">
-                <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
-                </a>
+       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <!-- Logo -->
+    <a class="navbar-brand" href="#">
+      <img src="/static/VaultXLogo.png" alt="VaultX Logo" class="img-fluid" style="max-height: 80px;">
+    </a>
 
-                <ul class="nav nav-pills">
-                    <%
-// Ha nincs definiálva, legyen üres tömb
-                    const permissons = typeof rolePermissons !== "undefined" ? rolePermissons : [];
+    <!-- Hamburger button mobilhoz -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-                    %>
-                    <% if (Array.isArray(permissons) && permissons.includes("admin_dashboard")) { %>
-                        <li class="nav-item">
-                        <a href="/admin/dashboard" class="m-2 btn btn-secondary" id=""> Admin Dashboard</a>
-                    </li>
-                    <% } %>
-                        <li class="nav-item">
-                        <a href="/dashboard" class="m-2 btn btn-primary" id="newuserbutton"> Dashboard</a>
-                    </li>
-                    
-                    <% if ((Array.isArray(permissons) && permissons.length !== 0) ) { %>
-                        <li class="nav-item">
-                            <a href="/logout" class="m-2 btn btn-danger">Logout</a>
-                        </li>
-                    <% } %>
-                                           </ul>
-                                    </div>
-                                </div>
-                            </nav>
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav ms-auto">
+
+
+        <% 
+          // Ha nincs definiálva, legyen üres tömb
+          const permissons = typeof rolePermissons !== "undefined" ? rolePermissons : []; 
+        %>
+
+        <% if (Array.isArray(permissons) && permissons.includes("admin_dashboard")) { %>
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link btn btn-primary m-2 px-3">Admin Dashboard</a>
+          </li>
+        <% } %>
+
+        <li class="nav-item">
+          <a href="/dashboard" class="nav-link btn btn-secondary m-2 px-3" id="newuserbutton">Dashboard</a>
+        </li>
+
+        <% if (Array.isArray(permissons) && permissons.length !== 0) { %>
+          <li class="nav-item">
+            <a href="/logout" class="nav-link btn btn-danger m-2 px-3">Logout</a>
+          </li>
+        <% } %>
+
+      </ul>
+    </div>
+  </div>
+</nav>
 
 
 <main class="container mb-5 my-5" style="padding-bottom: 80px;">

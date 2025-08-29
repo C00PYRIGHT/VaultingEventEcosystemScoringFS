@@ -47,7 +47,7 @@ export async function Verify(req, res, next) {
     // 6️⃣ Cookie-ba írás
     res.cookie("token", newToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
       maxAge: 20 * 60 * 1000
     });

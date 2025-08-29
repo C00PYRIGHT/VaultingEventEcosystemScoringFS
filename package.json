@@ -1,8 +1,9 @@
 {
     "type": "module",
-    "scripts": {
-        "start": "node --env-file .env ./app.js"
-    },
+"scripts": {
+    "start": "node app.js"
+},
+
     "dependencies": {
         "axios": "^1.9.0",
         "bcrypt": "^6.0.0",

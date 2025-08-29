@@ -38,9 +38,11 @@
                 <select type="text" class="form-select shadow-none" id="role" name="role" placeholder="role"
                     autocomplete="off" >
                     <% roleList.forEach(Role => { %>
-  <option value="<%= Role._id %>" <%= formData && formData.role === Role._id ? "selected" : "" %>><%= Role.roleName %></option>
-<% }) %>
+  <option value="<%= Role._id %>" <%= formData && formData.role.toString() === Role._id.toString() ? "selected" : "" %>><%= Role.roleName %></option>
 
+
+
+<% }) %>
 
                     
                 </select>

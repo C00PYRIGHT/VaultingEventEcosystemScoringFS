@@ -12,9 +12,9 @@ const HorseSchema = new mongoose.Schema({
     unique: true,
     match: [/^\d{8}$/, 'FEI-ID must be exactly 8 digits!'],
   },
-  gender: {
+  sex: {
     type: String,
-    required: [ true, 'Gender required!'],
+    required: [ true, 'Sex required!'],
   },
   Bdate: {
     type: Date,

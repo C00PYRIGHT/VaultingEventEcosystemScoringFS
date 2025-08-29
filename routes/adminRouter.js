@@ -162,6 +162,7 @@ adminRouter.get("/dashboard/roles", Verify, VerifyRole(), async (req, res) => {
     }
 });
 adminRouter.get("/newRole", Verify, VerifyRole(), async (req, res) => {
+    
     const permissions = await Permissions.find();
     res.render("admin/newRole", {
         permissions: permissions,
