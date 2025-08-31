@@ -1,0 +1,88 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Edit Vaulter</h1>
+
+  <form action="/vaulter/edit/<%= formData ? formData._id : '' %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+
+      <!-- Vaulter Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Name" name="Name" placeholder="Vaulter Name"
+                 value="<%= formData ? formData.Name : '' %>" autocomplete="off">
+          <label for="Name">Vaulter Name</label>
+        </div>
+      </div>
+
+      <!-- FEI ID -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="FEI ID"
+                 value="<%= formData ? formData.feiid : '' %>" autocomplete="off">
+          <label for="feiid">FEI ID</label>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="Male" <%= formData && formData.gender === 'Male' ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= formData && formData.gender === 'Female' ? 'selected' : '' %>>Female</option>
+          </select>
+          <label for="gender">Gender</label>
+        </div>
+      </div>
+
+      <!-- Birthdate -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="date" class="form-control shadow-none" id="Bdate" name="Bdate"
+            value="<%= formData && formData.Bdate ? new Date(formData.Bdate).toISOString().split('T')[0] : '' %>">
+          <label for="Bdate">Birthdate</label>
+        </div>
+      </div>
+
+      <!-- Nationality -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="Nationality" name="Nationality">
+            <option value="">-- Select Nationality --</option>
+            <% countries.forEach(country => { %>
+              <option value="<%= country %>" <%= formData && formData.Nationality === country ? "selected" : "" %>>
+                <%= country %>
+              </option>
+            <% }) %>
+          </select>
+          <label for="Nationality">Nationality</label>
+        </div>
+      </div>
+
+      <!-- Vaulter Status -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="Status" name="Status">
+            <option value="active" <%= formData && formData.Status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= formData && formData.Status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
+          <label for="Status">Vaulter Status</label>
+        </div>
+      </div>
+
+      <!-- Arm Number -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="ArmNr" name="ArmNr" placeholder="Arm Number"
+                 value="<%= formData ? formData.ArmNr : '' %>">
+          <label for="ArmNr">Arm Number</label>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">Edit Vaulter</button>
+      </div>
+
+    </div>
+  </form>
+</div>

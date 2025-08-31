@@ -1,0 +1,243 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10 " style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Lunger Details</h1>
+
+  <form action="" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+      
+      <!-- Lunger Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Name" name="Name" placeholder="Lunger Name" disabled
+                 value="<%= formData ? formData.Name : '' %>" autocomplete="off">
+          <label for="Name">Lunger Name</label>
+        </div>
+      </div>
+
+      <!-- FEI ID -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="FEI ID" disabled
+                 value="<%= formData ? formData.feiid : '' %>" autocomplete="off">
+          <label for="feiid">FEI ID</label>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Gender" name="Gender" placeholder="Gender" disabled
+                 value="<%= formData ? formData.Gender : '' %>">
+          <label for="Gender">Gender</label>
+        </div>
+      </div>
+
+
+      <!-- Nationality -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Nationality" name="Nationality" placeholder="Nationality" disabled
+                 value="<%= formData ? formData.Nationality : '' %>">
+          <label for="Nationality">Nationality</label>
+        </div>
+      </div>
+
+
+
+      <!-- Incidents -->
+      <div class="col-md-12 bg-secondary bg-opacity-10 rounded p-3" style="max-width: 97%;">
+        <label class="form-label mb-2">Incidents</label>
+        <div id="IncidentList"></div>
+        <a type="button" class="btn btn-sm btn-danger mt-2" id="addIncident">+ Add Incident</a>
+      </div>
+
+      <!-- Edit button -->
+      <div class="col-md-12 mt-3">
+        <a class="btn btn-primary w-100" href="/lunger/edit/<%= formData._id %>">Edit Lunger</a>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+
+<!-- Incident Modal -->
+<div class="modal fade" id="IncidentModal" tabindex="-1" role="dialog" aria-labelledby="IncidentModalLabel"
+    aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="IncidentModalLabel">Add Incident</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/lunger/newIncident/<%= formData ? formData._id : '' %>" id="IncidentModalForm" method="POST">
+                <div class="col-md-12 mb-2">
+                  <div class="form-floating">
+                    <select class="form-select" id="incidentType" name="incidentType" required>
+                      <option value="">Select Incident Type</option>
+                      <option value="Injury">Injury</option>
+                      <option value="Withdraw">Withdraw</option>
+                      <option value="Yellow card">Yellow Card</option>
+                      <option value="Warning">Warning</option>
+                      <option value="Elimination">Elimination</option>
+                      <option value="Disqualification">Disqualification</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <label for="incidentType">Incident Type</label>
+                  </div>
+                </div>
+                <div class="col-md-12 mb-2">
+                  <div class="form-floating">
+                    <input type="text" class="form-control shadow-none" id="description" name="description" placeholder="Description" required>
+                    <label for="description">Description</label>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmIncidentModalButton">Add</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- View Incident Modal -->
+<div class="modal fade" id="IncidentViewModal" tabindex="-1" aria-labelledby="IncidentViewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title" id="IncidentViewModalLabel">Incident details</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Type:</strong> <span id="incidentTypeContent"></span></p>
+        <p><strong>Reported by:</strong> <span id="incidentUser"></span></p>
+        <p><strong>Description:</strong></p>
+        <pre id="incidentDescription" class="bg-light p-2 rounded"></pre>
+        <p class="mt-3"><strong>Date:</strong> <span id="incidentDate"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmIncidentModalButton = document.getElementById('confirmIncidentModalButton');
+    const addIncidentButton = document.getElementById('addIncident');
+    const bsIncidentModal = new bootstrap.Modal(document.getElementById('IncidentModal'));
+    const IncidentForm = document.getElementById('IncidentModalForm');
+
+    addIncidentButton?.addEventListener('click', event => {
+        event.preventDefault();
+        bsIncidentModal.show();
+    });
+
+    confirmIncidentModalButton?.addEventListener('click', () => {
+        fetch(IncidentForm?.getAttribute('action'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                incidentType: document.getElementById('incidentType').value,
+                description: document.getElementById('description').value
+            })
+        }).then(() => window.location.reload());
+    });
+});
+
+function addIncidentInput(type = '', description = '', date = '', user = '') {
+    const incidentList = document.getElementById('IncidentList');
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('input-group', 'mb-2', 'd-flex', 'gap-2');
+
+    const inputType = document.createElement('input');
+    inputType.type = 'text';
+    inputType.classList.add('form-control');
+    inputType.value = type;
+    inputType.disabled = true;
+
+    const inputDesc = document.createElement('input');
+    inputDesc.type = 'text';
+    inputDesc.classList.add('form-control');
+    inputDesc.value = description;
+    inputDesc.disabled = true;
+
+    const inputDate = document.createElement('input');
+    inputDate.type = 'text';
+    inputDate.classList.add('form-control');
+    inputDate.value = date;
+    inputDate.disabled = true;
+    
+    const inputUser = document.createElement('input');
+    inputUser.type = 'text';
+    inputUser.classList.add('form-control');
+    inputUser.value = user;
+    inputUser.disabled = true;
+
+    const viewBtn = document.createElement('button');
+    viewBtn.type = 'button';
+    viewBtn.classList.add('btn', 'btn-info');
+    const zoomicon = document.createElement('i');
+    zoomicon.classList.add('bi', 'bi-search');
+    viewBtn.appendChild(zoomicon);
+    viewBtn.onclick = () => showIncidentPopup(type, description, date, user);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('btn', 'btn-danger');
+    const trashicon = document.createElement('i');
+    trashicon.classList.add('bi', 'bi-trash');
+    btn.appendChild(trashicon);
+    btn.onclick = () => removeIncident(wrapper);
+
+    wrapper.appendChild(inputType);
+    wrapper.appendChild(inputDesc);
+    wrapper.appendChild(inputDate);
+    wrapper.appendChild(inputUser);
+
+    wrapper.appendChild(viewBtn);
+    wrapper.appendChild(btn);
+
+    incidentList.appendChild(wrapper);
+}
+
+function removeIncident(parentElement) {
+    fetch('/lunger/deleteIncident/<%= formData ? formData._id : '' %>', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: parentElement.querySelector('input:nth-child(1)').value,
+            description: parentElement.querySelector('input:nth-child(2)').value,
+            date: parentElement.querySelector('input:nth-child(3)').value
+        })
+    }).then(() => window.location.reload());
+}
+
+function showIncidentPopup(type, description, date, user) {
+    document.getElementById('incidentTypeContent').textContent = type;
+    document.getElementById('incidentDescription').textContent = description;
+    document.getElementById('incidentUser').textContent = user;
+    document.getElementById('incidentDate').textContent = date;
+    const modal = new bootstrap.Modal(document.getElementById('IncidentViewModal'));
+    modal.show();
+}
+
+<% if (formData && formData.LungerIncident) { %>
+  <% formData.LungerIncident.forEach(function(incident) { %>
+    
+    addIncidentInput(
+      "<%= incident.incidentType %>",
+      "<%= incident.description %>",
+      "<%= new Date(incident.date).toLocaleString('hu-HU', {timeZone: 'Europe/Budapest'}) %>",
+      "<%= users.find(user => user._id.toString() === incident.User.toString())?.username %>"
+    );
+  <% }) %>
+<% } %>
+</script>

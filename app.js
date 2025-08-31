@@ -11,6 +11,8 @@ import {dblogger, logger} from './logger.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import horseRouter from './routes/horseRouter.js';
+import vaulterRouter from './routes/vaulterRouter.js';
+import lungerRouter from './routes/lungerRouter.js';
 
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
@@ -61,11 +63,19 @@ app.use((req, res, next) => {
   });
   next();
 });
+app.use((req, res, next) => {
+  res.locals.version = process.env.VERSION || '1.0.0'; // vagy amit szeretnél
+  next();
+});
 
 app.use('/', router); // Útvonalak kezelése
 
 app.use('/admin', adminRouter); // Admin útvonalak kezelése
-app.use('/horse', horseRouter); // Admin útvonalak kezelése
+app.use('/horse', horseRouter); // Horse útvonalak kezelése
+app.use('/vaulter', vaulterRouter); // Vaulter útvonalak kezelése
+app.use('/lunger', lungerRouter); // Lunger útvonalak kezelése
+
+
 
   
 app.use((req, res, next) => {

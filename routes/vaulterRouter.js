@@ -6,8 +6,9 @@ import { Logout } from "../controllers/auth.js";
 import Validate from "../middleware/Validate.js";
 import { check } from "express-validator";
 import { Verify, VerifyRole } from "../middleware/Verify.js";
-import Horse from '../models/Horse.js';
+import Vaulter from '../models/Vaulter.js';
 import Permissions from '../models/Permissions.js';
+import User from '../models/User.js';
 const countries = [
   "Afghanistan",
   "Albania",
@@ -207,10 +208,10 @@ const countries = [
   "Zimbabwe"
 ];
 
-const HorseRouter = express.Router();
+const vaulterRouter = express.Router();
 
-HorseRouter.get('/new',Verify, VerifyRole(), (req, res) => {
-    res.render('horse/newHorse', {
+vaulterRouter.get('/new',Verify, VerifyRole(), (req, res) => {
+    res.render('vaulter/newVaulter', {
         countries:countries,
         formData: req.session.formData, 
         rolePermissons: req.user?.role?.permissions
@@ -220,13 +221,13 @@ HorseRouter.get('/new',Verify, VerifyRole(), (req, res) => {
     req.session.successMessage = null; // Clear the success message after rendering 
 });
 
-HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
+vaulterRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
     try {
-        const newHorse = new Horse(req.body);
-        await newHorse.save()
-        dblogger.db(`Horse ${newHorse.name} created by user ${req.user.username}.`);
-        req.session.successMessage = 'Horse created successfully!';
-        res.redirect('/horse/new');
+        const newVaulter = new Vaulter(req.body);
+        await newVaulter.save()
+        dblogger.db(`Vaulter ${newVaulter.name} created by user ${req.user.username}.`);
+        req.session.successMessage = 'Vaulter created successfully!';
+        res.redirect('/vaulter/new');
     } catch (err) {
     console.error(err);
 
@@ -234,7 +235,7 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
       ? Object.values(err.errors).map(e => e.message).join(' ')
       : 'Server error';
 
-    return res.render('horse/newHorse', {
+    return res.render('vaulter/newVaulter', {
         permissionList: await Permissions.find(),
       formData: req.body,
       successMessage: null,
@@ -245,10 +246,10 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
     
   }
 });
-  HorseRouter.get('/dashboard',Verify, VerifyRole(), async (req, res) => {
-        const horses = await Horse.find().sort({ name: 1 });
-        res.render('horse/horsedash', {
-            horses,
+  vaulterRouter.get('/dashboard',Verify, VerifyRole(), async (req, res) => {
+        const vaulters = await Vaulter.find().sort({ name: 1 });
+        res.render('vaulter/vaulterdash', {
+            vaulters,
             rolePermissons: req.user?.role?.permissions,
             failMessage: req.session.failMessage,
             successMessage: req.session.successMessage,
@@ -259,15 +260,17 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
     });
 
 
-    HorseRouter.get('/details/:id',Verify, VerifyRole(), async (req, res) => {
+    vaulterRouter.get('/details/:id',Verify, VerifyRole(), async (req, res) => {
         try {
-            const horse = await Horse.findById(req.params.id);
-            if (!horse) {
-            req.session.failMessage = 'Horse not found';
-            return res.redirect('/horse/dashboard');
+            console.log(req.params.id);
+            const vaulter = await Vaulter.findById(req.params.id);
+            if (!vaulter) {
+            req.session.failMessage = 'Vaulter not found';
+            return res.redirect('/vaulter/dashboard');
           }
-            res.render('horse/horseDetail', {
-                formData: horse,
+            res.render('vaulter/vaulterDetail', {
+                users: await User.find(),
+                formData: vaulter,
                 rolePermissons: req.user?.role?.permissions,
                 failMessage: req.session.failMessage,
                 successMessage: req.session.successMessage,
@@ -278,19 +281,19 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
         } catch (err) {
             console.error(err);
             req.session.failMessage = 'Server error';
-            return res.redirect('/horse/dashboard');
+            return res.redirect('/vaulter/dashboard');
         }
     });
-    HorseRouter.get('/edit/:id',Verify, VerifyRole(), async (req, res) => {
+    vaulterRouter.get('/edit/:id',Verify, VerifyRole(), async (req, res) => {
         try {
-          const horse = await Horse.findById(req.params.id);
-          if (!horse) {
-            req.session.failMessage = 'Horse not found';
-            return res.redirect('/horse/dashboard');
+          const vaulter = await Vaulter.findById(req.params.id);
+          if (!vaulter) {
+            req.session.failMessage = 'Vaulter not found';
+            return res.redirect('/vaulter/dashboard');
           }
-          res.render('horse/editHorse', {
+          res.render('vaulter/editVaulter', {
             countries:countries,
-            formData: horse,
+            formData: vaulter,
             rolePermissons: req.user?.role?.permissions,
             failMessage: req.session.failMessage,
             successMessage: req.session.successMessage,
@@ -301,19 +304,19 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
         } catch (err) {
           console.error(err);
           req.session.failMessage = 'Server error';
-          return res.redirect('/horse/dashboard');
+          return res.redirect('/vaulter/dashboard');
         }
       });
-      HorseRouter.post('/edit/:id',Verify, VerifyRole(), Validate, async (req, res) => {
+      vaulterRouter.post('/edit/:id',Verify, VerifyRole(), Validate, async (req, res) => {
         try {
-          const horse = await Horse.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
-          dblogger.db(`Horse ${horse.name} updated by user ${req.user.username}.`);
-          if (!horse) {
-            req.session.failMessage = 'Horse not found';
-            return res.redirect('/horse/dashboard');
+          const vaulter = await Vaulter.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
+          dblogger.db(`Vaulter ${vaulter.name} updated by user ${req.user.username}.`);
+          if (!vaulter) {
+            req.session.failMessage = 'Vaulter not found';
+            return res.redirect('/vaulter/dashboard');
           }
-          req.session.successMessage = 'Horse updated successfully!';
-          res.redirect('/horse/dashboard'
+          req.session.successMessage = 'Vaulter updated successfully!';
+          res.redirect('/vaulter/dashboard'
           );
         } catch (err) {
           console.error(err);
@@ -322,7 +325,7 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
             ? Object.values(err.errors).map(e => e.message).join(' ')
             : 'Server error';
       
-          return res.render('horse/editHorse', {
+          return res.render('vaulter/editVaulter', {
             permissionList: await Permissions.find(),
             formData: { ...req.body, _id: req.params.id },
             successMessage: null,
@@ -332,57 +335,72 @@ HorseRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
         }
       });
 
-      HorseRouter.delete('/delete/:id',Verify, VerifyRole(), async (req, res) => {
+      vaulterRouter.delete('/delete/:id',Verify, VerifyRole(), async (req, res) => {
         try {
 
-          const horse = await Horse.findByIdAndDelete(req.params.id);
-          dblogger.db(`Horse ${horse.name} deleted by user ${req.user.username}.`);
-          if (!horse) {
-            req.session.failMessage = 'Horse not found';
-            return res.status(404).json({ message: 'Horse not found' });
+          const vaulter = await Vaulter.findByIdAndDelete(req.params.id);
+          dblogger.db(`Vaulter ${vaulter.name} deleted by user ${req.user.username}.`);
+          if (!vaulter) {
+            req.session.failMessage = 'Vaulter not found';
+            return res.status(404).json({ message: 'Vaulter not found' });
           }
-          res.status(200).json({ message: 'Horse deleted successfully' });
+          res.status(200).json({ message: 'Vaulter deleted successfully' });
         } catch (err) {
           console.error(err);
           req.session.failMessage = 'Server error';
           res.status(500).json({ message: 'Server error' });
         }
       });
-      HorseRouter.delete('/deleteNote/:id', Verify, VerifyRole(), async (req, res) => {
+      vaulterRouter.delete('/deleteIncident/:id', Verify, VerifyRole(), async (req, res) => {
         try {
-          const horse = await Horse.findById(req.params.id);
-          dblogger.db(`Horse ${horse.name} note deleted by user ${req.user.username}.`);
-          if (!horse) {
-            req.session.failMessage = 'Horse not found';
-            return res.status(404).json({ message: 'Horse not found' });
+          const vaulter = await Vaulter.findById(req.params.id);
+          dblogger.db(`Vaulter ${vaulter.name} incident deleted by user ${req.user.username}.`);
+          if (!vaulter) {
+            req.session.failMessage = 'Vaulter not found';
+            return res.status(404).json({ message: 'Vaulter not found' });
           }
-          horse.Notes = horse.Notes.filter(note => note.note !== req.body.note);
-          await Horse.findByIdAndUpdate(req.params.id, horse, { runValidators: true });
-          res.status(200).json({ message: 'Note deleted successfully' });
+          console.log(req.body);
+          
+          vaulter.VaulterIncident.forEach(incident => {
+            console.log('--- Incident összehasonlítás ---');
+            console.log('description:', incident.description === req.body.description, incident.description, req.body.description);
+            console.log('incidentType:', incident.incidentType === req.body.type, incident.incidentType, req.body.type);
+          });
+          
+          vaulter.VaulterIncident = vaulter.VaulterIncident.filter(incident =>
+            !(
+              incident.description === req.body.description &&
+              incident.incidentType === req.body.type             )
+          );
+          await Vaulter.findByIdAndUpdate(req.params.id, vaulter, { runValidators: true });
+          res.status(200).json({ message: 'Incident deleted successfully' });
         } catch (err) {
           console.error(err);
           req.session.failMessage = 'Server error';
           res.status(500).json({ message: 'Server error' });
         }
       });
-     HorseRouter.post('/newNote/:id',Verify,VerifyRole(), async (req,res) =>{
+     vaulterRouter.post('/newIncident/:id',Verify,VerifyRole(), async (req,res) =>{
       try{
-        const horse = await Horse.findById(req.params.id);
-        dblogger.db(`Horse ${horse.name} note created by user ${req.user.username}.`);
-        const newNote = {
-          note: req.body.note,
-          timestamp: Date.now()
+        const vaulter = await Vaulter.findById(req.params.id);
+        dblogger.db(`Vaulter ${vaulter.Name} incident created by user ${req.user.username}.`);
+        const newIncident = {
+          description: req.body.description,
+          incidentType: req.body.incidentType,
+          date: Date.now(),
+          User: req.user._id
+
         }    
-        horse.Notes.push(newNote);
-        await Horse.findByIdAndUpdate(req.params.id, horse, { runValidators: true})
-        res.status(200).json({ message: 'Note added successfully!'})
-             } catch (err) {
-          console.error(err);
-          req.session.failMessage = 'Server error';
+        vaulter.VaulterIncident.push(newIncident);
+        await Vaulter.findByIdAndUpdate(req.params.id, vaulter, { runValidators: true })
+        res.status(200).json({ message: 'Incident added successfully!' })
+      } catch (err) {
+        console.error(err);
+        req.session.failMessage = 'Server error';
           res.status(500).json({ message: 'Server error' });
         }
         
 
     });
 
-export default HorseRouter;
+export default vaulterRouter;

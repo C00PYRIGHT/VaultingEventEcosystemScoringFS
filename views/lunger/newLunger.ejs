@@ -1,0 +1,62 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Add New Lunger</h1>
+
+  <form action="/lunger/new" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+
+      <!-- Lunger Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Name" name="Name" placeholder="Lunger Name"
+                 value="<%= formData ? formData.Name : '' %>" autocomplete="off">
+          <label for="Name">Lunger Name</label>
+        </div>
+      </div>
+
+      <!-- FEI ID -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="feiid" name="feiid" placeholder="FEI ID"
+                 value="<%= formData ? formData.feiid : '' %>" autocomplete="off">
+          <label for="feiid">FEI ID</label>
+        </div>
+      </div>
+
+      <!-- Gender -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="Gender" name="Gender">
+            <option value="">Select Gender</option>
+            <option value="Male" <%= formData && formData.Gender === 'Male' ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= formData && formData.Gender === 'Female' ? 'selected' : '' %>>Female</option>
+          </select>
+          <label for="Gender">Gender</label>
+        </div>
+      </div>
+
+
+      <!-- Nationality -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="Nationality" name="Nationality">
+            <option value="">-- Select Nationality --</option>
+            <% countries.forEach(country => { %>
+              <option value="<%= country %>" <%= formData && formData.Nationality === country ? "selected" : "" %>>
+                <%= country %>
+              </option>
+            <% }) %>
+          </select>
+          <label for="Nationality">Nationality</label>
+        </div>
+      </div>
+
+
+
+      <!-- Submit Button -->
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">Add Lunger</button>
+      </div>
+
+    </div>
+  </form>
+</div>

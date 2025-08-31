@@ -3,13 +3,15 @@ import Horse from './Horse.js';
 
 
 const LungerSchema = new mongoose.Schema({
-        Lungername:{
+        Name:{
             type: String,
             required: [true, 'Lunger name required!'],
         },
         feiid:{
             type: String,
             required: [true, 'FEI-ID required!'],
+            minlength: [8, 'FEI ID must be at 8 characters!'],
+            maxlength: [8, 'FEI ID must be at 8 characters!'],
             unique: true,
         },  
         Gender:{

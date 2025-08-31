@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
-import Horse from './Horse';
-import { type } from 'os';
 
 
 const VaulterSchema = new mongoose.Schema({
-        Vaultername:{
+        Name:{
             type: String,
             required: [true, 'Vaulter name required!'],
         },
         feiid:{
             type: String,
             required: [true, 'FEI-ID required!'],
+            minlength: [8, 'FEI ID must be at 8 characters!'],
+            maxlength: [8, 'FEI ID must be at 8 characters!'],
             unique: true,
         },
         gender:{
@@ -25,7 +25,7 @@ const VaulterSchema = new mongoose.Schema({
             type: String,
             required: [true,  'Nationality required!'],
         },
-        VaulterStatus:{
+        Status:{
             type: String,
             enum: ['active', 'inactive'],
             default: 'active',
@@ -48,4 +48,4 @@ const VaulterSchema = new mongoose.Schema({
         
 },{ timestamps: true });
 
-export default mongoose.model('vaulters', HorseSchema);
+export default mongoose.model('vaulters', VaulterSchema);

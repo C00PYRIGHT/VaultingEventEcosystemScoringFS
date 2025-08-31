@@ -96,7 +96,16 @@ router.post("/profile/:id", Verify, UserIDValidator, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
+router.get('/creators', async (req, res) => {
+    res.render('creators', {
+        
+        successMessage: req.session?.successMessage, 
+        rolePermissons: req.user?.role.permissions,
+        failMessage: req.session?.failMessage,
+        formData: req.session?.formData,
+        user: req?.user
+    });
+});
 router.get('/logout', Logout);
 
 
