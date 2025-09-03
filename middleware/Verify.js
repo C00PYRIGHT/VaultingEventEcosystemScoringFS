@@ -131,6 +131,65 @@ export async function UserIDValidator(req,res,next) {
     }
 }
 
+export async function StoreUserWithoutValidation(req,res,next){
+  try {
+
+    // 1️⃣ Token lekérése cookie-ból vagy Authorization headerből
+    const token = req.cookies.token || req.headers["authorization"]?.split(" ")[1];
+    if (!token) {
+      return next();
+    }
+
+    // 2️⃣ Blacklist ellenőrzés
+    const blacklisted = await Blacklist.findOne({ token });
+
+    if (blacklisted) {
+      return next();
+
+    }
+
+    // 3️⃣ Token validálás
+    let decoded;
+    try {
+      decoded = jwt.verify(token, SECRET_ACCESS_TOKEN);
+    } catch (err) {
+            return next();
+    }
+
+    // 4️⃣ Felhasználó lekérése az adatbázisból
+    const user = await User.findById(decoded.id).populate("role");
+
+    if (!user) {
+      return next();
+    }
+
+    // 5️⃣ Rolling JWT generálása
+    const newToken = jwt.sign({ id: user._id }, SECRET_ACCESS_TOKEN, { expiresIn: "90m" });
+
+    // 6️⃣ Cookie-ba írás
+    res.cookie("token", newToken, {
+      httpOnly: true,
+      secure: SECURE_MODE === 'true', // élesben: true
+      sameSite: "lax",
+      maxAge: 20 * 60 * 1000
+    });
+
+    // 7️⃣ User adatok a requesthez
+    const { password, ...data } = user._doc;
+    req.user = data;
+
+    next();
+
+  } catch (err) {
+    console.error("Verify middleware catch error:", err);
+    if (req.session) req.session.failMessage = "This session has expired or is invalid.";
+          return next();
+
+  }
+}
+
+
+
 export async function  CheckLoggedIn(req, res, next) {
       try {
     // 1️⃣ Token lekérése cookie-ból vagy Authorization headerből

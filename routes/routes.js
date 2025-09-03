@@ -5,7 +5,7 @@ import { Login } from "../controllers/auth.js";
 import { Logout } from "../controllers/auth.js";
 import Validate from "../middleware/Validate.js";
 import { check } from "express-validator";
-import { CheckLoggedIn, UserIDValidator, Verify, VerifyRole } from "../middleware/Verify.js";
+import { CheckLoggedIn, UserIDValidator, Verify, VerifyRole, StoreUserWithoutValidation } from "../middleware/Verify.js";
 import DashCards from '../models/DashCards.js';
 import User from '../models/User.js';
 import Role from '../models/Role.js';
@@ -66,8 +66,9 @@ router.get("/profile/:id" , Verify, UserIDValidator, async (req, res) => {
 
 router.post("/profile/:id", Verify, UserIDValidator, async (req, res) => {
  try {
-        const updateData = { ...req.body };
-        if (req.body.password=== '') {
+        const { username, feiid, password } = req.body;
+        const updateData = { username, feiid, password };
+        if (!req.body.password || req.body.password=== '') {
             const user = await User.findById(req.params.id);
             updateData.password = user.password;
         }else{
@@ -96,7 +97,7 @@ router.post("/profile/:id", Verify, UserIDValidator, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-router.get('/creators', async (req, res) => {
+router.get('/creators', StoreUserWithoutValidation, async (req, res) => {
     res.render('creators', {
         
         successMessage: req.session?.successMessage, 

@@ -3,10 +3,10 @@ import { createLogger, format, transports, addColors } from 'winston';
 // Add custom colors for log levels
 addColors({
   db: 'magenta',     // <-- magenta szín a db szinthez
-  info: 'blue',
+  info: 'green',
   error: 'red',
   warn: 'yellow',
-  debug: 'green'
+  debug: 'blur'
 });
 
 export const logger = createLogger({

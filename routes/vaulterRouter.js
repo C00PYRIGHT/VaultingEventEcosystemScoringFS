@@ -262,7 +262,6 @@ vaulterRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
 
     vaulterRouter.get('/details/:id',Verify, VerifyRole(), async (req, res) => {
         try {
-            console.log(req.params.id);
             const vaulter = await Vaulter.findById(req.params.id);
             if (!vaulter) {
             req.session.failMessage = 'Vaulter not found';
@@ -359,13 +358,8 @@ vaulterRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
             req.session.failMessage = 'Vaulter not found';
             return res.status(404).json({ message: 'Vaulter not found' });
           }
-          console.log(req.body);
           
-          vaulter.VaulterIncident.forEach(incident => {
-            console.log('--- Incident összehasonlítás ---');
-            console.log('description:', incident.description === req.body.description, incident.description, req.body.description);
-            console.log('incidentType:', incident.incidentType === req.body.type, incident.incidentType, req.body.type);
-          });
+         
           
           vaulter.VaulterIncident = vaulter.VaulterIncident.filter(incident =>
             !(
@@ -396,8 +390,11 @@ vaulterRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res) => {
         res.status(200).json({ message: 'Incident added successfully!' })
       } catch (err) {
         console.error(err);
-        req.session.failMessage = 'Server error';
-          res.status(500).json({ message: 'Server error' });
+        const errorMessage = err.errors
+            ? Object.values(err.errors).map(e => e.message).join(' ')
+            : 'Server error';
+        req.session.failMessage = errorMessage;
+          res.status(500).json({ message: errorMessage });
         }
         
 

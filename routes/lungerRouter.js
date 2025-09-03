@@ -263,13 +263,12 @@ lungerRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
 
     lungerRouter.get('/details/:id',Verify, VerifyRole(), async (req, res) => {
         try {
-            console.log(req.params.id);
-            const lunger = await Lunger.findById(req.params.id);
+          const lunger = await Lunger.findById(req.params.id);
             if (!lunger) {
             req.session.failMessage = 'Lunger not found';
             return res.redirect('/lunger/dashboard');
           }
-            res.render('lunger/lungerDetail', {
+            res.render('lunger/LungerDetail', {
                 users: await User.find(),
                 formData: lunger,
                 rolePermissons: req.user?.role?.permissions,
@@ -360,13 +359,8 @@ lungerRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
             req.session.failMessage = 'Lunger not found';
             return res.status(404).json({ message: 'Lunger not found' });
           }
-          console.log(req.body);
           
-          lunger.LungerIncident.forEach(incident => {
-            console.log('--- Incident összehasonlítás ---');
-            console.log('description:', incident.description === req.body.description, incident.description, req.body.description);
-            console.log('incidentType:', incident.incidentType === req.body.type, incident.incidentType, req.body.type);
-          });
+
           
           lunger.LungerIncident = lunger.LungerIncident.filter(incident =>
             !(
@@ -396,9 +390,11 @@ lungerRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
         await Lunger.findByIdAndUpdate(req.params.id, lunger, { runValidators: true })
         res.status(200).json({ message: 'Incident added successfully!' })
       } catch (err) {
-        console.error(err);
-        req.session.failMessage = 'Server error';
-          res.status(500).json({ message: 'Server error' });
+        const errorMessage = err.errors
+            ? Object.values(err.errors).map(e => e.message).join(' ')
+            : 'Server error';
+          req.session.failMessage = errorMessage;
+        res.status(500).json({ message: errorMessage });
         }
         
 
