@@ -2,20 +2,15 @@ import mongoose from 'mongoose';
 import { type } from 'os';
 
 const ScoreSchema = new mongoose.Schema({
-    vaulter: {
+    event: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'vaulters',
-        required: [true, 'Vaulter required!'],
+        ref: 'events',
+        required: [true, 'Event required!'],
     },
-    horse: {
+    entry: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'horses',
-        required: [true, 'Horse required!'],
-    },
-    lunger: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'lungers',
-        required: [true, 'Lunger required!'],
+        ref: 'entries',
+        required: [true, 'Entry required!'],
     },
     round: {
         type: String,
@@ -25,12 +20,6 @@ const ScoreSchema = new mongoose.Schema({
         type: String,
         enum: ['compulsory', 'freestyle','technical'],
         required: [true, 'Type required!'],
-    },
-
-    schedulePart: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'scheduleparts',
-        required: [true, 'Schedule part required!'],
     },
     scoresheets: {
     type: [mongoose.Schema.Types.ObjectId],

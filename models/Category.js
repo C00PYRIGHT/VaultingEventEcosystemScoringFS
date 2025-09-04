@@ -17,11 +17,11 @@ const CategorySchema = new mongoose.Schema({
             required: [true, 'Stars required!'],
             default: 0, // Default stars for the category
         },
-        Gender:{
+        Sex:{
             type: String,
             enum: ['Male', 'Female'],
         },
-        ReqTestTypes: {
+        TestTypes: {
             type: {
                 Comp: { type: Boolean, required: true, default: false }, // Competition test
                 FreeTest: { type: Boolean, required: true, default: false }, // Free test
@@ -44,7 +44,7 @@ const CategorySchema = new mongoose.Schema({
         },
         ScoreType: {
             type: {
-                Type: { type: String, required: true, enum: ['Compulsory','FreeTest','TechTest'] },
+                Type: { type: String, required: true,unique: true, enum: ['Compulsory','FreeTest','TechTest'] },
                 Horse: { type: Number, required: true, default: 0.0 }, // Horse score
                 Artistic: { type: Number, required: true, default: 0.0 }, // Acrobatics score
                 Technical: { type: Number, required: true, default: 0.0 }, // Technical score

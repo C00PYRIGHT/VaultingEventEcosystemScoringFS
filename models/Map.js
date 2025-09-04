@@ -3,6 +3,11 @@ import Horse from './Horse.js';
 
 
 const VaulterSchema = new mongoose.Schema({
+        event: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'events',
+            required: [true, 'Event required!'],
+        },
         Venue:{
             type: String,
             required: [true, 'Venue name required!'],
