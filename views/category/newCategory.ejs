@@ -90,9 +90,9 @@
 
         <% 
           const scoreTypeDefs = [
-            { display: 'Compulsory test', type: 'Compulsory', fields: ['Horse', 'Exercise'] },
-            { display: 'Free test', type: 'Free', fields: ['Horse', 'Artistic', 'Technical'] },
-            { display: 'Technical test', type: 'Technical', fields: ['Horse', 'Artistic', 'Technical'] }
+            { display: 'Horse points', type: 'Horse', fields: ['A1', 'A2','A3'] },
+            { display: 'Free test', type: 'Free', fields: ['R', 'D', 'M', 'E'] },
+            { display: 'Technical test', type: 'Technical', fields: ['R', 'D', 'M','E'] }
           ];
         %>
         <% scoreTypeDefs.forEach(function(def) { %>
@@ -122,43 +122,42 @@
 <script>
 
   document.addEventListener('DOMContentLoaded', function() {
-    const reqCompCheckbox = document.getElementById('ReqComp');
     const reqFreeTestCheckbox = document.getElementById('ReqFreeTest');
     const reqTechnicalTestCheckbox = document.getElementById('ReqTechnicalTest');
-    let showed = 0;
-    const compulsoryBlock = document.getElementById('CompulsoryBlock');
     const freeTestBlock = document.getElementById('FreeBlock');
     const technicalTestBlock = document.getElementById('TechnicalBlock');
-    const main = document.getElementById('mainBlock');
+    const horseBlock = document.getElementById('HorseBlock');
+    const typeSelect = document.getElementById('Type');
+    const sexSelect = document.getElementById('Sex');
 
-    function toggleBlock(checkbox, block,first) {
+    function toggleBlock(checkbox, block) {
       if (checkbox.checked) {
 
-        showed++;
-        console.log("showed incremented to:", showed);
-          displayParentBlock();
         block.style.display = 'block';
         block.querySelectorAll('input').forEach(input => input.disabled = false);
       } else {
-        if(first){
-        if (showed > 0) {
-          showed--;
-        }}
-        displayParentBlock();
+
         block.style.display = 'none';
         block.querySelectorAll('input').forEach(input => input.disabled = true);
-      }
+      
     }
-    function displayParentBlock() {
-      if (showed !== 0) {
-        main.style.display = 'block';
+    }
+    function toggleTypeSex() {
+      const selectedType = typeSelect.value;
+      if (selectedType !== 'Individual' && selectedType !== '') {
+
+        sexSelect.value = 'Mixed';
+        sexSelect.disabled = false;
       } else {
-        main.style.display = 'none';
+        sexSelect.value = '';
+        sexSelect.disabled = false;
       }
     }
-    reqCompCheckbox.addEventListener('change', function() {
-      toggleBlock(reqCompCheckbox, compulsoryBlock,true);
-    });
+    typeSelect.addEventListener('change', toggleTypeSex);
+    toggleTypeSex();
+
+
+
 
     reqFreeTestCheckbox.addEventListener('change', function() {
       toggleBlock(reqFreeTestCheckbox, freeTestBlock,true);
@@ -168,11 +167,9 @@
       toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock,true);
     });
 
-    // Initial toggle based on current checkbox states
-    toggleBlock(reqCompCheckbox, compulsoryBlock,false);
-    toggleBlock(reqFreeTestCheckbox, freeTestBlock,false);
-    toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock,false);
-        displayParentBlock();
+    toggleBlock(reqFreeTestCheckbox, freeTestBlock);
+    toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock);
+    horseBlock.querySelectorAll('input').forEach(input => input.disabled = false);
 
   });
 

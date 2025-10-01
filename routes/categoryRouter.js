@@ -84,29 +84,29 @@ categoryRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
           return res.redirect('/category/dashboard');
         }
       });
-      categoryRouter.post('/edit/:id',Verify, VerifyRole(), Validate, async (req, res) => {
+      categoryRouter.post('/edit/:id', Verify, VerifyRole(), Validate, async (req, res) => {
         try {
-          console.log(req.body);
-          const updateData = { ...req.body };
-          updateData._id = req.params.id; // Ensure the ID is set for validation
+          // Üres string helyett undefined/null, ha nincs kiválasztva
+
+          const updateData = { ...req.body, _id: req.params.id };
           const category = await Category.findByIdAndDelete(req.params.id);
-          const updated = new Category(updateData); 
-          updated.save();
-          dblogger.db(`Category ${category.CategoryDispName} updated by user ${req.user.username}.`);
           if (!category) {
             req.session.failMessage = 'Category not found';
             return res.redirect('/category/dashboard');
           }
+          const updated = new Category(updateData);
+          
+          await updated.save(); // await és try/catch-ben!
+          dblogger.db(`Category ${category.CategoryDispName} updated by user ${req.user.username}.`);
           req.session.successMessage = 'Category updated successfully!';
-          res.redirect('/category/dashboard'
-          );
+          res.redirect('/category/dashboard');
         } catch (err) {
           console.error(err);
-      
+
           const errorMessage = err.errors
             ? Object.values(err.errors).map(e => e.message).join(' ')
             : 'Server error';
-      
+
           return res.render('category/editCategory', {
             permissionList: await Permissions.find(),
             formData: { ...req.body, _id: req.params.id },

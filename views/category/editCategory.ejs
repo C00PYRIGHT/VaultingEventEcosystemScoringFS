@@ -1,5 +1,5 @@
 <div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
-  <h1 class="text-center mb-3">Add Edit Category</h1>
+  <h1 class="text-center mb-3">Edit Category</h1>
 
   <form action="/category/edit/<%= formData ? formData._id : '' %>" method="POST">
     <div class="row justify-content-center g-3 m-auto">
@@ -35,6 +35,7 @@
             <option value="">Select Sex</option>
             <option value="Male" <%= formData && formData.Sex === 'Male' ? 'selected' : '' %>>Male</option>
             <option value="Female" <%= formData && formData.Sex === 'Female' ? 'selected' : '' %>>Female</option>
+            <option value="Mixed" <%= formData && formData.Sex === 'Mixed' ? 'selected' : '' %>>Mixed</option>
           </select>
           <label for="Sex">Sex</label>
         </div>
@@ -89,9 +90,9 @@
 
         <% 
           const scoreTypeDefs = [
-            { display: 'Compulsory test', type: 'Compulsory', fields: ['Horse', 'Exercise'] },
-            { display: 'Free test', type: 'Free', fields: ['Horse', 'Artistic', 'Technical'] },
-            { display: 'Technical test', type: 'Technical', fields: ['Horse', 'Artistic', 'Technical'] }
+            { display: 'Horse points', type: 'Horse', fields: ['A1', 'A2','A3'] },
+            { display: 'Free test', type: 'Free', fields: ['R', 'D', 'M', 'E'] },
+            { display: 'Technical test', type: 'Technical', fields: ['R', 'D', 'M','E'] }
           ];
         %>
         <% scoreTypeDefs.forEach(function(def) { %>
@@ -112,7 +113,7 @@
 
       <!-- Submit Button -->
       <div class="col-md-12 mt-3">
-        <button type="submit" class="btn btn-primary w-100">Add Category</button>
+        <button type="submit" class="btn btn-primary w-100">Edit Category</button>
       </div>
 
     </div>
@@ -121,43 +122,40 @@
 <script>
 
   document.addEventListener('DOMContentLoaded', function() {
-    const reqCompCheckbox = document.getElementById('ReqComp');
     const reqFreeTestCheckbox = document.getElementById('ReqFreeTest');
     const reqTechnicalTestCheckbox = document.getElementById('ReqTechnicalTest');
-    let showed = 0;
-    const compulsoryBlock = document.getElementById('CompulsoryBlock');
     const freeTestBlock = document.getElementById('FreeBlock');
     const technicalTestBlock = document.getElementById('TechnicalBlock');
-    const main = document.getElementById('mainBlock');
+    const horseBlock = document.getElementById('HorseBlock');
+        const typeSelect = document.getElementById('Type');
+    const sexSelect = document.getElementById('Sex');
 
-    function toggleBlock(checkbox, block,first) {
+    function toggleBlock(checkbox, block) {
       if (checkbox.checked) {
 
-        showed++;
-        console.log("showed incremented to:", showed);
-          displayParentBlock();
         block.style.display = 'block';
         block.querySelectorAll('input').forEach(input => input.disabled = false);
       } else {
-        if(first){
-        if (showed > 0) {
-          showed--;
-        }}
-        displayParentBlock();
+
         block.style.display = 'none';
         block.querySelectorAll('input').forEach(input => input.disabled = true);
-      }
+      
     }
-    function displayParentBlock() {
-      if (showed !== 0) {
-        main.style.display = 'block';
+    }
+
+    function toggleTypeSex() {
+      const selectedType = typeSelect.value;
+      if (selectedType !== 'Individual' && selectedType !== '') {
+
+        sexSelect.value = 'Mixed';
       } else {
-        main.style.display = 'none';
+        sexSelect.value = '';
       }
     }
-    reqCompCheckbox.addEventListener('change', function() {
-      toggleBlock(reqCompCheckbox, compulsoryBlock,true);
-    });
+
+
+    typeSelect.addEventListener('change', toggleTypeSex);
+
 
     reqFreeTestCheckbox.addEventListener('change', function() {
       toggleBlock(reqFreeTestCheckbox, freeTestBlock,true);
@@ -167,11 +165,9 @@
       toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock,true);
     });
 
-    // Initial toggle based on current checkbox states
-    toggleBlock(reqCompCheckbox, compulsoryBlock,false);
-    toggleBlock(reqFreeTestCheckbox, freeTestBlock,false);
-    toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock,false);
-        displayParentBlock();
+    toggleBlock(reqFreeTestCheckbox, freeTestBlock);
+    toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock);
+    horseBlock.querySelectorAll('input').forEach(input => input.disabled = false);
 
   });
 

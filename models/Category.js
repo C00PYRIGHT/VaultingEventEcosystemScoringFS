@@ -30,26 +30,31 @@ const CategorySchema = new mongoose.Schema({
         max: 4,
         min: 1,
     },
-    Compulsory: { 
+    Horse: { 
         type: { 
-            Horse : { type: Number, min: 0.0, max: 1.0, required: true },
-            Exercise : { type: Number, min: 0.0, max: 1.0, required: true },
+            A1 : { type: Number, min: 0.0, max: 1.0, required: true },
+            A2 : { type: Number, min: 0.0, max: 1.0, required: true },
+            A3 : { type: Number, min: 0.0, max: 1.0, required: true },
+
         },
         _id: false
     },
     Free: { 
         type: { 
-            Horse : { type: Number, min: 0.0, max: 1.0, required: true },
-            Artistic : { type: Number, min: 0.0, max: 1.0, required: true },
-            Technical : { type: Number, min: 0.0, max: 1.0, required: true },
+            R : { type: Number, min: 0.0, max: 1.0, required: true },
+            D : { type: Number, min: 0.0, max: 1.0, required: true },
+            M : { type: Number, min: 0.0, max: 1.0, required: true },
+            E : { type: Number, min: 0.0, max: 1.0, required: true }
+
         },
         _id: false
     },
     Technical: { 
         type: { 
-            Horse : { type: Number, min: 0.0, max: 1.0, required: true },
-            Artistic : { type: Number, min: 0.0, max: 1.0, required: true },
-            Technical : { type: Number, min: 0.0, max: 1.0, required: true },
+            R : { type: Number, min: 0.0, max: 1.0, required: true },
+            D : { type: Number, min: 0.0, max: 1.0, required: true },
+            M : { type: Number, min: 0.0, max: 1.0, required: true },
+            E : { type: Number, min: 0.0, max: 1.0, required: true }
         },
         _id: false
     },

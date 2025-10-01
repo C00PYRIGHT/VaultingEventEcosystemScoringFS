@@ -1,0 +1,136 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Add New Entry</h1>
+
+  <form action="/entry/new" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+      
+            <!-- Selected Event -->
+      <div class="col-md-12 d-none">
+        <div class="form-floating">
+          <input type="text" id="event" name="event" required value="<%= selectedEvent?._id %>">
+          </select>
+        </div>
+      </div>
+
+
+
+      <!-- Horse -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="horse" name="horse" required>
+            <option value="">Select Horse</option>
+            <% horses.forEach(element => { %>
+              <option value="<%= element._id %>" <%= formData && formData.horse === element._id ? 'selected' : '' %>><%= element.Horsename %></option>
+            <% }) %>
+          </select>
+          <label for="horse">Select Horse</label>
+        </div>
+      </div>
+      <!-- Lunger --> 
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="lunger" name="lunger" required>
+            <option value="">Select Lunger</option>
+            <% lungers.forEach(element => { %>
+              <option value="<%= element._id %>" <%= formData && formData.lunger === element._id ? 'selected' : '' %>><%= element.Name %></option>
+            <% }) %>
+          </select>
+          <label for="lunger">Select Lunger</label>
+        </div>
+      </div>
+
+
+
+        <!-- Category -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="category" name="category" required>
+            <option value="">Select Category</option>
+            <% categorys.forEach(element => { %>
+              <option value="<%= element._id %>" <%= formData && formData.category === element._id ? 'selected' : '' %> id="<%= element.Type %>"><%= element.CategoryDispName %></option>
+            <% }) %>
+
+          </select>
+          <label for="category">Select Category</label>
+        </div>
+      </div>
+        <!-- Status-->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="status" name="status" required>
+            <option value="">Select Status</option>
+            <option value="registered" <%= formData && formData.status === 'registered' ? 'selected' : '' %>>Registered</option>
+            <option value="withdrawn" <%= formData && formData.status === 'withdrawn' ? 'selected' : '' %>>Withdrawn</option>
+            <option value="confirmed" <%= formData && formData.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+            <option value="cancelled" <%= formData && formData.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+          </select>
+          <label for="status">Select Status</label>
+        </div>
+      </div>
+
+
+
+
+           <div class="col-md-12 mt-5">
+        <div class="position-relative border border-1 border-secondary rounded border-opacity-25 pt-3">
+          <div 
+            class="position-absolute border-secondary border-opacity-25 px-3"
+            style="top: -25px; left: 24px; font-weight: bold; border-radius: 0.35rem 0.35rem 0 0; border: 1px solid #6c757d; border-bottom: none;">
+            Vaulters
+          </div>
+          <div class="p-2" id="vaulterContainer"></div>
+        </div>
+      </div>
+      <!-- Submit Button -->
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">Add Entry</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+<script>
+  // Map category ID to type
+  const categoryTypeMap = {};
+  <% categorys.forEach(cat => { %>
+    categoryTypeMap["<%= cat._id %>"] = "<%= cat.Type %>";
+  <% }); %>
+
+  // Vaulter select template
+  function getVaulterSelect(index, vaulters, formData) {
+    let options = '<option value="">Select Vaulter ' + (index + 1) + '</option>';
+    <% vaulters.forEach(element => { %>
+      options += `<option value="<%= element._id %>">${"<%= element.Name %>"}</option>`;
+    <% }); %>
+    return `
+      <div class="form-floating mb-2">
+        <select class="form-select shadow-none" name="vaulter[]" required>
+          ${options}
+        </select>
+        <label>Select Vaulter ${index + 1}</label>
+      </div>
+    `;
+  }
+
+  function renderVaulterInputs(count) {
+    const vaulterContainer = document.getElementById('vaulterContainer');
+    vaulterContainer.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      vaulterContainer.innerHTML += getVaulterSelect(i, <%- JSON.stringify(vaulters) %>, <%- JSON.stringify(formData && formData.vaulter ? formData.vaulter : []) %>);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category');
+    function updateVaulterInputs() {
+      const selectedCategoryId = categorySelect.value;
+      const type = categoryTypeMap[selectedCategoryId];
+      if (type === 'Squad') renderVaulterInputs(6);
+      else if (type === 'PDD') renderVaulterInputs(2);
+      else if (type === 'Individual') renderVaulterInputs(1);
+      else document.getElementById('vaulterContainer').innerHTML = '';
+    }
+    categorySelect.addEventListener('change', updateVaulterInputs);
+    updateVaulterInputs(); // Initial render
+  });
+</script>
