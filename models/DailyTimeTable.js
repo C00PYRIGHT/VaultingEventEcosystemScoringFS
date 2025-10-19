@@ -7,11 +7,11 @@ const DailyTimeTableSchema = new mongoose.Schema({
         ref: 'events',
         required: [true, 'Event required!'],
     },
-    timetablepart: {
+    timetablepart: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'timetableparts',
         required: [true, 'Timetable part required!'],
-    },
+    }],
     DayName: {
         type: String,
         required: [true, 'Day name required!'],

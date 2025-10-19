@@ -120,57 +120,56 @@
   </form>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const reqFreeTestCheckbox = document.getElementById('ReqFreeTest');
+  const reqTechnicalTestCheckbox = document.getElementById('ReqTechnicalTest');
+  const freeTestBlock = document.getElementById('FreeBlock');
+  const technicalTestBlock = document.getElementById('TechnicalBlock');
+  const horseBlock = document.getElementById('HorseBlock');
+  const typeSelect = document.getElementById('Type');
+  const sexSelect = document.getElementById('Sex');
+  const starSelect = document.getElementById('Star');
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const reqFreeTestCheckbox = document.getElementById('ReqFreeTest');
-    const reqTechnicalTestCheckbox = document.getElementById('ReqTechnicalTest');
-    const freeTestBlock = document.getElementById('FreeBlock');
-    const technicalTestBlock = document.getElementById('TechnicalBlock');
-    const horseBlock = document.getElementById('HorseBlock');
-    const typeSelect = document.getElementById('Type');
-    const sexSelect = document.getElementById('Sex');
+  function setBlockVisible(block, visible) {
+    block.style.display = visible ? 'block' : 'none';
+    block.querySelectorAll('input').forEach(input => input.disabled = !visible);
+  }
 
-    function toggleBlock(checkbox, block) {
-      if (checkbox.checked) {
+  function updateTestBlocks() {
+    const starValue = parseInt(starSelect.value, 10);
+    const starIsOne = (!Number.isNaN(starValue) && starValue === 1);
 
-        block.style.display = 'block';
-        block.querySelectorAll('input').forEach(input => input.disabled = false);
-      } else {
+    const visibleFree = reqFreeTestCheckbox.checked && !starIsOne;
+    const visibleTech = reqTechnicalTestCheckbox.checked && !starIsOne;
 
-        block.style.display = 'none';
-        block.querySelectorAll('input').forEach(input => input.disabled = true);
-      
+    setBlockVisible(freeTestBlock, visibleFree);
+    setBlockVisible(technicalTestBlock, visibleTech);
+    reqTechnicalTestCheckbox.disabled = starIsOne;
+    if (starIsOne) {
+      reqTechnicalTestCheckbox.checked = false;
     }
+  }
+
+  function toggleTypeSex() {
+    const selectedType = typeSelect.value;
+    if (selectedType !== 'Individual' && selectedType !== '') {
+      sexSelect.value = 'Mixed';
+      sexSelect.disabled = true;
+    } else {
+      sexSelect.disabled = false;
+      if (sexSelect.value === 'Mixed') sexSelect.value = '';
     }
-    function toggleTypeSex() {
-      const selectedType = typeSelect.value;
-      if (selectedType !== 'Individual' && selectedType !== '') {
+  }
 
-        sexSelect.value = 'Mixed';
-        sexSelect.disabled = false;
-      } else {
-        sexSelect.value = '';
-        sexSelect.disabled = false;
-      }
-    }
-    typeSelect.addEventListener('change', toggleTypeSex);
-    toggleTypeSex();
+  // events
+  typeSelect.addEventListener('change', toggleTypeSex);
+  starSelect.addEventListener('change', updateTestBlocks);
+  reqFreeTestCheckbox.addEventListener('change', updateTestBlocks);
+  reqTechnicalTestCheckbox.addEventListener('change', updateTestBlocks);
 
-
-
-
-    reqFreeTestCheckbox.addEventListener('change', function() {
-      toggleBlock(reqFreeTestCheckbox, freeTestBlock,true);
-    });
-
-    reqTechnicalTestCheckbox.addEventListener('change', function() {
-      toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock,true);
-    });
-
-    toggleBlock(reqFreeTestCheckbox, freeTestBlock);
-    toggleBlock(reqTechnicalTestCheckbox, technicalTestBlock);
-    horseBlock.querySelectorAll('input').forEach(input => input.disabled = false);
-
-  });
-
+  // initial state
+  toggleTypeSex();
+  updateTestBlocks();
+  horseBlock.querySelectorAll('input').forEach(input => input.disabled = false);
+});
 </script>
