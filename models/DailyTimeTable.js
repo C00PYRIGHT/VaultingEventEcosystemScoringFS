@@ -7,11 +7,6 @@ const DailyTimeTableSchema = new mongoose.Schema({
         ref: 'events',
         required: [true, 'Event required!'],
     },
-    timetablepart: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'timetableparts',
-        required: [true, 'Timetable part required!'],
-    }],
     DayName: {
         type: String,
         required: [true, 'Day name required!'],
@@ -23,8 +18,11 @@ const DailyTimeTableSchema = new mongoose.Schema({
     Date: {
         type: Date,
         required: [true, 'Date required!'],
+        unique: [true, 'A Day for this date already exists!'],
     }
 
-}, { timestamps: true });       
+}, { timestamps: true });   
+
+
 
 export default mongoose.model('daily_timetables', DailyTimeTableSchema);

@@ -1,0 +1,210 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">New program element</h1>
+
+
+  <form action="/dailytimetable/NewTTelement/<%= formData ? formData._id : '' %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+
+      <!--  Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="Name" name="Name" placeholder="Name"
+                 value="<%= formData ? formData.Name : '' %>" autocomplete="off" required>
+          <label for="Name">Name</label>
+        </div>
+      </div>
+
+      <!-- Dailytimetable -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <%
+            // Elfogad: populated objektumot vagy sima ObjectId stringet
+            const currentDayId = String(
+              (formData && formData.dailytimetable && (formData.dailytimetable._id || formData.dailytimetable)) || ''
+            );
+          %>
+          <select class="form-select shadow-none" id="dailytimetable" name="dailytimetable" required>
+            <option value="">Select Day</option>
+            <% (days || []).forEach(element => { %>
+              <option value="<%= element._id %>"
+                <%= currentDayId === String(element._id) ? 'selected' : '' %>>
+                <%= element.DayName %> -- <%= element.Date ? new Date(element.Date).toLocaleDateString('hu-HU') : '' %>
+              </option>
+            <% }) %>
+          </select>
+          <label for="dailytimetable">Parent Day</label>
+        </div>
+      </div>
+
+
+      <!-- starttime -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <% 
+            let timeValue = '';
+            if (formData && formData.StartTimePlanned) {
+              const hh = String(formData.StartTimePlanned.split(':')[0]).padStart(2,'0');     // helyi óra
+              const mm = String(formData.StartTimePlanned.split(':')[1]).padStart(2,'0');   // helyi perc
+              timeValue = `${hh}:${mm}`;
+            }
+          %>
+          <input type="time" class="form-control shadow-none" id="StartTimePlanned" name="StartTimePlanned"
+                 value="<%= timeValue %>" autocomplete="off" required>
+          <label for="StartTimePlanned">Start Time Planned</label>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="col-md-12 bg-secondary bg-opacity-10 p-3 rounded">
+        <label class="form-label mb-2">Categories</label>
+        <div class="row">
+          <% const selected = formData && formData.Category ? formData.Category.map(x => x.toString()) : []; %>
+          <% categorys.forEach(category => { %>
+            <div class="col-md-6 col-lg-4 mb-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       name="Category[]" 
+                       value="<%= category._id %>"
+                       id="cat_<%= category._id %>"
+                       <%= selected.includes(category._id.toString()) ? 'checked' : '' %>>
+                <label class="form-check-label" for="cat_<%= category._id %>">
+                  <%= category.CategoryDispName %>
+                </label>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+
+            <!-- TestType -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="TestType" name="TestType" required>
+            <option value="">Select test type</option>
+            <option value="Compulsory" <%= formData && formData.TestType === 'Compulsory' ? 'selected' : '' %>>Compulsory</option>
+            <option value="Free Test" <%= formData && formData.TestType === 'Free Test' ? 'selected' : '' %>>Free Test</option>
+            <option value="Tech Test" <%= formData && formData.TestType === 'Tech Test' ? 'selected' : '' %>>Tech Test</option>
+
+          </select>
+          <label for="TestType">Test Type</label>
+        </div>
+      </div>
+
+            <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="NumberOfJudges" name="NumberOfJudges" required>
+            <option value="">Select number of judges</option>
+            <option value="1" <%= formData && formData.NumberOfJudges === 1 ? 'selected' : '' %>>1</option>
+            <option value="2" <%= formData && formData.NumberOfJudges === 2 ? 'selected' : '' %>>2</option>
+            <option value="4" <%= formData && formData.NumberOfJudges === 4 ? 'selected' : '' %>>4</option>
+            <option value="6" <%= formData && formData.NumberOfJudges === 6 ? 'selected' : '' %>>6</option>
+            <option value="8" <%= formData && formData.NumberOfJudges === 8 ? 'selected' : '' %>>8</option>
+
+
+          </select>
+          <label for="NumberOfJudges">Number of Judges</label>
+        </div>
+      </div>
+
+
+      <div class="col-md-12 bg-secondary bg-opacity-10 p-3 rounded mt-3">
+          <label class="form-label mb-2">Judge Tables:</label>
+          <div id="judgeInputs">
+      
+      </div>
+
+
+
+      <!-- Submit Button -->
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">New program</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+
+<script>
+  const judgesList = <%- JSON.stringify(judges) %>;
+  const judgeInputsDiv = document.getElementById('judgeInputs');
+  const numberOfJudgesSelect = document.getElementById('NumberOfJudges');
+  const existingJudges = <%- JSON.stringify((formData && formData.JudgesList) || []) %>;
+
+  numberOfJudgesSelect.addEventListener('change', () => {
+    const n = parseInt(numberOfJudgesSelect.value, 10) || 0;
+    judgeInputsDiv.innerHTML = '';
+    for (let idx = 0; idx < n; idx++) {
+      createNewJudgeSelects(judgesList, null, n, null, idx);
+    }
+  });
+
+  // Init after DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    if (existingJudges.length) {
+      numberOfJudgesSelect.value = existingJudges.length;
+      judgeInputsDiv.innerHTML = '';
+      existingJudges.forEach((el, idx) => {
+        createNewJudgeSelects(judgesList, el.JudgeUserID, existingJudges.length, el.Table, idx);
+      });
+    } else {
+      const n = parseInt(numberOfJudgesSelect.value, 10) || 0;
+      for (let idx = 0; idx < n; idx++) createNewJudgeSelects(judgesList, null, n, null, idx);
+    }
+  });
+
+  function createNewJudgeSelects(judges, selectedJudgeId = null, numberOfNeededJudges = 4, selectedTable = null, index = 0) {
+    const div = document.createElement('div');
+    div.classList.add('d-flex', 'gap-2', 'mb-2');
+
+    // Judge select
+    const selectJudge = document.createElement('select');
+    selectJudge.classList.add('form-select');
+    selectJudge.name = `JudgesList[${index}][JudgeUserID]`;
+    selectJudge.required = true;
+
+    {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Select Judge';
+      selectJudge.appendChild(opt);
+    }
+    for (const judge of judges) {
+      const opt = document.createElement('option');
+      opt.value = judge._id;
+      opt.textContent = judge.username;
+      console.log('Comparing:', String(judge._id), String(selectedJudgeId));
+      if (selectedJudgeId && String(judge._id) === String(selectedJudgeId)) opt.selected = true;
+      selectJudge.appendChild(opt);
+    }
+
+    // Table select
+    const selectTable = document.createElement('select');
+    selectTable.classList.add('form-select');
+    selectTable.name = `JudgesList[${index}][Table]`;
+    selectTable.required = true;
+    selectTable.style.maxWidth = '150px';
+
+    {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Select Table';
+      selectTable.appendChild(opt);
+    }
+    const tables = ['A','B','C','D','E','F','G','H'];
+    for (let j = 0; j < numberOfNeededJudges && j < tables.length; j++) {
+      const table = tables[j];
+      const opt = document.createElement('option');
+      opt.value = table;
+      opt.textContent = table;
+      if (selectedTable === table) opt.selected = true;
+      selectTable.appendChild(opt);
+    }
+
+    // Remove button
+
+    div.appendChild(selectJudge);
+    div.appendChild(selectTable);
+    judgeInputsDiv.appendChild(div);
+  }
+</script>

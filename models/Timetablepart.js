@@ -1,20 +1,25 @@
 import mongoose from 'mongoose';
-import Category from './Category';
 
 const TimetablePartSchema = new mongoose.Schema({
-    event: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'events',
-        required: [true, 'Event required!'],
-    },
 
         Name: {
             type: String,
             required: [true, 'Timetable part name required!'],
         },
+        dailytimetable: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'daily_timetables',
+            required: [true, 'Daily timetable required!'],
+        },
         StartTimePlanned: {
-            type: Date,
+            type: String,  // "HH:MM" formátum
             required: [true, 'Start time required!'],
+            validate: {
+                validator: function(v) {
+                    return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
+                },
+                message: 'Invalid time format (HH:MM required)'
+            }
         },
         StartTimeReal: {
             type: Date, 
@@ -27,7 +32,7 @@ const TimetablePartSchema = new mongoose.Schema({
         },
         TestType: {
             type: String,
-            enum: ['Compulsory', 'FreeTest', 'TechTest'],
+            enum: ['Compulsory', 'Free Test', 'Tech Test'],
             required: [true, 'Test type required!'],
         },
         Round: {
@@ -38,16 +43,26 @@ const TimetablePartSchema = new mongoose.Schema({
         Starters: {
             type: [mongoose.Schema.Types.ObjectId],
             ref: 'Entries',
-            required: [true, 'At least one starter required!'],
-        },
+            default: [],},
         StartingOrder: {
             type: [{ Entry: mongoose.Schema.Types.ObjectId, Order: Number, submittedtables: [mongoose.Schema.Types.ObjectId] }],
             ref: 'Entries',
             default: [],
         },
-        JudgesList: {
-            type: [{JudgeUserID:mongoose.Schema.Types.ObjectId, Table: String, Clerk1: String, Clerk2: String}],
+        NumberOfJudges: {
+            type: Number,
+            enum: [1,2,4,6,8],
+            required: [true, 'Number of judges required!'],
+        },
+        Judges: {
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: 'Entries',
             default: [],
+        },
+        JudgesList: {
+            type: [{JudgeUserID:mongoose.Schema.Types.ObjectId, Table: String}],
+            default: [],
+            unique: true
         }
     },{ timestamps: true });
 export default mongoose.model('timetableparts', TimetablePartSchema);

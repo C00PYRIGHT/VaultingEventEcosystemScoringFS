@@ -130,11 +130,13 @@ eventRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
        eventRouter.get('/details/:id',Verify, VerifyRole(), async (req, res) => {
         try {
           const event = await Event.findById(req.params.id);
+          const users = await User.find().select('_id username');
             if (!event) {
             req.session.failMessage = 'Event not found';
             return res.redirect('/event/dashboard');
           }
             res.render('event/EventDetail', {
+              users: users,
                 formData: event,
                 rolePermissons: req.user?.role?.permissions,
                 failMessage: req.session.failMessage,
@@ -183,6 +185,7 @@ eventRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
               name : req.body.name,
               role : req.body.role,
               contact: req.body.contact,
+              userID : req.body.userID
 
             }
             event.AssignedOfficials.push(newResponsiblePerson);

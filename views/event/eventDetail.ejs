@@ -40,6 +40,7 @@
         </div>
       </div>
 
+
             <!-- ResponsiblePersons -->
       <div class="col-md-12 bg-secondary bg-opacity-10 rounded p-3" style="max-width: 97%;">
         <label class="form-label mb-2">Responsible persons</label>
@@ -48,7 +49,7 @@
       </div>
       <!-- Submit Button -->
       <div class="col-md-12 mt-3">
-        <button type="submit" class="btn btn-primary w-100" disabled>Save Changes</button>
+        <button type="submit" class="btn btn-primary w-100 d-none" disabled>Save Changes</button>
       </div>
 
     </div>
@@ -85,6 +86,17 @@
                     <label for="contact">Contact</label>
                   </div>
                 </div>
+                 <div class="col-md-12 mb-2">
+                  <div class="form-floating">
+                    <select class="form-select shadow-none" id="userID" name="userID" required>
+                      <option value="">Select User</option>
+                      <% users.forEach(user => { %>
+                        <option value="<%= user._id %>"><%= user.username %></option>
+                      <% }) %>
+                    </select>
+                    <label for="userID">User ID</label>
+                  </div>
+                </div>
               </form>
             </div>
             <div class="modal-footer">
@@ -107,6 +119,8 @@
         <p><strong>Name:</strong> <span id="Name"></span></p>
         <p><strong>Role:</strong> <span id="Role"></span></p>
         <p><strong>Contact:</strong><span id="Contact" class="p-2"></span>
+        <p><strong>User ID:</strong><span id="UserID" class="p-2"></span>
+
 </p>
       </div>
       <div class="modal-footer">
@@ -138,17 +152,19 @@ document.addEventListener('DOMContentLoaded', function() {
             body: new URLSearchParams({
                 name: document.getElementById('name').value,
                 role: document.getElementById('role').value,
-                contact: document.getElementById('contact').value
+                contact: document.getElementById('contact').value,
+                userID: document.getElementById('userID').value
             })
         }).then(() => window.location.reload());
     });
 });
 
-function addResponsiblePersonInput(name = '', role = '', contact = '') {
+function addResponsiblePersonInput(name = '', role = '', contact = '', userID = '') {
     const incidentList = document.getElementById('ResponsiblePersonList');
-
+    console.log(userID);
     const wrapper = document.createElement('div');
     wrapper.classList.add('input-group', 'mb-2', 'd-flex', 'gap-2');
+    wrapper.dataset.userid = userID.split(' -- ')[0]; // Csak az ID-t tárold
 
     const inputName = document.createElement('input');
     inputName.type = 'text';
@@ -167,8 +183,6 @@ function addResponsiblePersonInput(name = '', role = '', contact = '') {
     inputCont.classList.add('form-control');
     inputCont.value = contact;
     inputCont.disabled = true;
-    
-
 
     const viewBtn = document.createElement('button');
     viewBtn.type = 'button';
@@ -176,7 +190,7 @@ function addResponsiblePersonInput(name = '', role = '', contact = '') {
     const zoomicon = document.createElement('i');
     zoomicon.classList.add('bi', 'bi-search');
     viewBtn.appendChild(zoomicon);
-    viewBtn.onclick = () => showResponsiblePersonPopup(name, role, contact);
+    viewBtn.onclick = () => showResponsiblePersonPopup(name, role, contact, userID);
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -189,7 +203,6 @@ function addResponsiblePersonInput(name = '', role = '', contact = '') {
     wrapper.appendChild(inputName);
     wrapper.appendChild(inputRole);
     wrapper.appendChild(inputCont);
-
     wrapper.appendChild(viewBtn);
     wrapper.appendChild(btn);
 
@@ -197,33 +210,41 @@ function addResponsiblePersonInput(name = '', role = '', contact = '') {
 }
 
 function removeResponsiblePerson(parentElement) {
+    const inputs = parentElement.querySelectorAll('input');
     fetch('/admin/event/deleteResponsiblePerson/<%= formData ? formData._id : '' %>', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            name: parentElement.querySelector('input:nth-child(1)').value,
-            role: parentElement.querySelector('input:nth-child(2)').value,
-            contact: parentElement.querySelector('input:nth-child(3)').value
+            name: inputs[0].value,
+            role: inputs[1].value,
+            contact: inputs[2].value,
+            userID: parentElement.dataset.userid  // data attribútumból
         })
     }).then(() => window.location.reload());
 }
 
-function showResponsiblePersonPopup(name = '', role = '', contact = '') {
+function showResponsiblePersonPopup(name = '', role = '', contact = '', userID = '') {
     document.getElementById('Name').textContent = name;
     document.getElementById('Role').textContent = role;
     document.getElementById('Contact').textContent = contact;
+    document.getElementById('UserID').textContent = userID;
+
     const modal = new bootstrap.Modal(document.getElementById('ResponsiblePersonViewModal'));
     modal.show();
 }
 
 <% if (formData && formData.AssignedOfficials) { %>
-  <% formData.AssignedOfficials.forEach(function(offical) { %>
-    
+  <% formData.AssignedOfficials.forEach(function(official) { %>
+    <%
+      // Keress username-et a users tömbből
+      const matchedUser = users.find(u => String(u._id) === String(official.userID));
+      const username = matchedUser ? matchedUser.username : 'Unknown';
+    %>
     addResponsiblePersonInput(
-      "<%= offical.name %>",
-      "<%= offical.role %>",
-      "<%= offical.contact %>"
-
+      "<%= official.name %>",
+      "<%= official.role %>",
+      "<%= official.contact %>",
+      "<%= official.userID %> -- <%= username %>"
     );
   <% }) %>
 <% } %>

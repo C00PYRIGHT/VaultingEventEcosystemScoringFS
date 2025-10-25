@@ -1,0 +1,53 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Add new Day</h1>
+
+  <form action="/dailytimetable/new/" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+
+
+            <!-- Selected Event -->
+      <div class="col-md-12 d-none">
+        <div class="form-floating">
+          <input type="text" id="event" name="event" required value="<%= selectedEvent?._id %>">
+        </div>
+      </div>
+
+      <!-- Day Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="DayName" name="DayName" placeholder="Day Name"
+                 value="<%= formData ? formData.DayName : '' %>" autocomplete="off">
+          <label for="DayName">Day Name</label>
+        </div>
+      </div>
+
+      <!-- Display Name -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="text" class="form-control shadow-none" id="DisplayName" name="DisplayName" placeholder="Display Name"
+                 value="<%= formData ? formData.DisplayName : '' %>" autocomplete="off">
+          <label for="DisplayName">Display Name</label>
+        </div>
+      </div>
+
+
+            <!-- Date -->
+      <div class="col-md-12">
+        <div class="form-floating">
+          <input type="date" class="form-control shadow-none" id="Date" name="Date"
+            value="<%= formData && formData.Date ? new Date(formData.Date).toISOString().split('T')[0] : '' %>">
+          <label for="Date">Date</label>
+        </div>
+      </div>
+
+
+
+
+      <!-- Submit Button -->
+      <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary w-100">New Day</button>
+      </div>
+
+    </div>
+  </form>
+</div>

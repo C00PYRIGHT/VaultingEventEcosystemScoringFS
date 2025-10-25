@@ -20,6 +20,7 @@ import Event from './models/Event.js';
 import categoryRouter from './routes/categoryRouter.js';
 import entryRouter from './routes/entryRouter.js';
 import JudgesRouter from './routes/judgesRouter.js';
+import dailytimetableRouter from './routes/DtimetableRouter.js';
 
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
@@ -79,7 +80,7 @@ app.use((req, res, next) => {
   });
   next();
 });
-const version = '0.0.12';
+const version = '0.0.14';
 app.use(async (req, res, next) => {
 
   res.locals.selectedEvent = await Event.findOne({ selected: true });
@@ -97,6 +98,7 @@ app.use('/category', categoryRouter); // Category útvonalak kezelése
 app.use('/admin/event', eventRouter); // Event útvonalak kezelése
 app.use('/entry', entryRouter); // Entry útvonalak kezelése
 app.use('/judges', JudgesRouter); // Judges útvonalak kezelése
+app.use('/dailytimetable', dailytimetableRouter); // DailyTimeTable útvonalak kezelése
 
 
 
