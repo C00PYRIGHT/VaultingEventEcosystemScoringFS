@@ -1,0 +1,54 @@
+<div class="container my-4 border border-black border-1 border-opacity-10 rounded p-3 shadow bg-primary bg-opacity-10" style="max-width: 80vh;">
+  <h1 class="text-center mb-3">Method of creation</h1>
+
+  <form action="/order/createSelect/<%= formData._id %>" method="POST">
+    <div class="row justify-content-center g-3 m-auto">
+
+    
+        <div class="col-md-12">
+            <div class="form-floating">
+            <select class="form-select shadow-none" id="creationMethod" name="creationMethod" aria-label="Creation Method">
+                <option value="" selected disabled>Select method</option>
+                <option value="Drawing" <%= formData.creationMethod === 'Drawing' ? 'selected' : '' %>>Drawing</option>
+                <option value="Copy" <%= formData.creationMethod === 'Copy' ? 'selected' : '' %>>Copy(From another program or a round score)</option>
+            </select>
+            <label for="creationMethod">Start </label>
+            </div>
+
+
+ 
+      <div class="col-md-12 mt-3 d-flex justify-content-between">
+        <a href="/dailytimetable/dayparts/<%= formData.dailytimetable._id %>" class="btn btn-secondary w-50">Back</a>
+        <button type="submit" id="submit" class="btn btn-primary w-50 ms-2" disabled>Next</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const dropdown = document.getElementById('creationMethod');
+        const submitButton = document.getElementById('submit');
+        dropdown.addEventListener('change', function() {
+            const selectedValue = this.value;
+            if (selectedValue === 'Drawing') {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Proceed to Drawing';
+            } else if (selectedValue === 'Copy') {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Proceed to Copy';
+            }
+            else {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Unknown Method';
+            }
+
+            // You can add additional logic here based on the selected value
+        });
+    })
+
+
+</script>

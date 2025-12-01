@@ -2,7 +2,7 @@
   <h1 class="text-center mb-3">New program element</h1>
 
 
-  <form action="/dailytimetable/NewTTelement/<%= formData ? formData._id : '' %>" method="POST">
+  <form action="/dailytimetable/newTTelement/" method="POST">
     <div class="row justify-content-center g-3 m-auto">
 
       <!--  Name -->
@@ -89,6 +89,17 @@
           <label for="TestType">Test Type</label>
         </div>
       </div>
+            <div class="col-md-12">
+        <div class="form-floating">
+          <select class="form-select shadow-none" id="Round" name="Round" required>
+            <option value="">Select round</option>
+            <option value="1" <%= formData && formData.Round === '1' ? 'selected' : '' %>>1</option>
+            <option value="2" <%= formData && formData.Round === '2' ? 'selected' : '' %>>2</option>
+            <option value="Final" <%= formData && formData.Round === 'Final' ? 'selected' : '' %>>Final</option>
+          </select>
+          <label for="Round">Round</label>
+        </div>
+      </div>
 
             <div class="col-md-12">
         <div class="form-floating">
@@ -137,6 +148,7 @@
     for (let idx = 0; idx < n; idx++) {
       createNewJudgeSelects(judgesList, null, n, null, idx);
     }
+    updateDisabledOptions();
   });
 
   // Init after DOM ready
@@ -151,7 +163,40 @@
       const n = parseInt(numberOfJudgesSelect.value, 10) || 0;
       for (let idx = 0; idx < n; idx++) createNewJudgeSelects(judgesList, null, n, null, idx);
     }
+    updateDisabledOptions();
   });
+
+  function updateDisabledOptions() {
+    const judgeSelects = Array.from(document.querySelectorAll('.judge-select'));
+    const tableSelects = Array.from(document.querySelectorAll('.table-select'));
+
+    const chosenJudges = new Set(judgeSelects.map(s => s.value).filter(Boolean));
+    const chosenTables = new Set(tableSelects.map(s => s.value).filter(Boolean));
+
+    // disable judge options that are chosen elsewhere
+    for (const sel of judgeSelects) {
+      for (const opt of sel.options) {
+        if (!opt.value) { opt.disabled = false; continue; }
+        if (opt.value === sel.value) {
+          opt.disabled = false; // keep currently selected enabled
+        } else {
+          opt.disabled = chosenJudges.has(opt.value);
+        }
+      }
+    }
+
+    // disable table options that are chosen elsewhere
+    for (const sel of tableSelects) {
+      for (const opt of sel.options) {
+        if (!opt.value) { opt.disabled = false; continue; }
+        if (opt.value === sel.value) {
+          opt.disabled = false;
+        } else {
+          opt.disabled = chosenTables.has(opt.value);
+        }
+      }
+    }
+  }
 
   function createNewJudgeSelects(judges, selectedJudgeId = null, numberOfNeededJudges = 4, selectedTable = null, index = 0) {
     const div = document.createElement('div');
@@ -159,7 +204,7 @@
 
     // Judge select
     const selectJudge = document.createElement('select');
-    selectJudge.classList.add('form-select');
+    selectJudge.classList.add('form-select', 'judge-select');
     selectJudge.name = `JudgesList[${index}][JudgeUserID]`;
     selectJudge.required = true;
 
@@ -173,14 +218,13 @@
       const opt = document.createElement('option');
       opt.value = judge._id;
       opt.textContent = judge.username;
-      console.log('Comparing:', String(judge._id), String(selectedJudgeId));
       if (selectedJudgeId && String(judge._id) === String(selectedJudgeId)) opt.selected = true;
       selectJudge.appendChild(opt);
     }
 
     // Table select
     const selectTable = document.createElement('select');
-    selectTable.classList.add('form-select');
+    selectTable.classList.add('form-select', 'table-select');
     selectTable.name = `JudgesList[${index}][Table]`;
     selectTable.required = true;
     selectTable.style.maxWidth = '150px';
@@ -201,10 +245,15 @@
       selectTable.appendChild(opt);
     }
 
-    // Remove button
+    // Attach change listeners to keep options unique
+    selectJudge.addEventListener('change', updateDisabledOptions);
+    selectTable.addEventListener('change', updateDisabledOptions);
 
     div.appendChild(selectJudge);
     div.appendChild(selectTable);
     judgeInputsDiv.appendChild(div);
+
+    // Update disables right after adding
+    updateDisabledOptions();
   }
 </script>

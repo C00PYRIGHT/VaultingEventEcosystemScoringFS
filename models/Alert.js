@@ -24,6 +24,10 @@ const AlertSchema = new mongoose.Schema(
             default: 0,
             required: [true, 'Reappear status required']
         },
+        style:{
+            type: String,
+            default: 'danger',
+        }
 
        
     },

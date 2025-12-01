@@ -134,6 +134,33 @@ alertRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
         }
       });
 
+      alertRouter.get('/checkEvent/',Verify,VerifyRole(), async (req,res) => {
+         const eventID = res.locals.selectedEvent?._id;
+        if(!eventID){
+            return res.status(400).json({ message: 'No event selected' });
+        }
+        const newAlert = {
+            description: `Incomplete`,
+            title: 'Needed to define why needed this alert (Nincsenek jelenleg definialva milyen részeket ellenőrizzen a rendszer itt)',
+            permission: 'admin_dashboard',
+            active: true,
+            reappear: 100,
+            style: 'info'
+        }
+            const alert = new Alert(newAlert);
+            await alert.save();
+            logger.db(`Alert ${alert._id} created by syste.`);
+            res.session.successMessage = 'Alerts created successfully!';
+            res.redirect('/alerts/dashboard');
+        
+
+        
+
+      });
+
+      
+
+
 
 
 

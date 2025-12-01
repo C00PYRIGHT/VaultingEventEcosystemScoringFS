@@ -362,7 +362,7 @@ dailytimetableRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res
         }
       });
 
-            dailytimetableRouter.get('/newTTelement',Verify, VerifyRole(), async (req, res) => {
+  dailytimetableRouter.get('/newTTelement',Verify, VerifyRole(), async (req, res) => {
   try {
     const OnsiteOfficials = await Event.findOne({selected: true}).select('AssignedOfficials');
     
@@ -403,5 +403,32 @@ dailytimetableRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res
     return res.redirect('/dailytimetable/dashboard');
   }
 });
+
+
+      dailytimetableRouter.post('/newTTelement',Verify, VerifyRole(), Validate, async (req, res) => {
+        try {
+          const newTimetablePart = new TimetablePart(req.body);
+          await newTimetablePart.save()
+          logger.db(`TimetablePart ${newTimetablePart.Name} created by user ${req.user.username}.`);
+          req.session.successMessage = 'Timetable element created successfully!';
+          res.redirect('/dailytimetable/dayparts/' + newTimetablePart.dailytimetable);
+        } catch (err) {
+        logger.error(err + " User: "+ req.user.username);
+    
+        const errorMessage = err.errors
+          ? Object.values(err.errors).map(e => e.message).join(' ')
+          : (err.message || 'Server error');
+    
+        return res.render('dailytimetable/newttelement', {
+          days: await DailyTimeTable.find({event: res.locals.selectedEvent._id}).sort({Date: 1}),
+          categorys: await Category.find(),
+          formData: req.body,
+          successMessage: null,
+          failMessage: errorMessage,
+          user: req.user
+        });
+        
+      }
+    });
 export default dailytimetableRouter;
 

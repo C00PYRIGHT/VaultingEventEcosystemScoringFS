@@ -52,6 +52,45 @@
         </div>
       </div>
 
+  <% 
+  const styleDisplayMap = {
+    primary: 'Primary',
+    secondary: 'Secondary',
+    success: 'Success',
+    danger: 'Danger',
+    warning: 'Warning',
+    info: 'Info',
+    dark: 'Dark'
+  };
+  const selectedStyleDisplay = formData && formData.style ? (styleDisplayMap[formData.style] || formData.style) : '';
+%>
+            <!-- Style -->
+      <div class="col-md-12">
+        <div class="form-floating position-relative searchable-dropdown">
+          <i class="bi bi-chevron-down position-absolute top-50 end-0 pe-3 translate-middle-y"></i>
+          <input type="text" class="form-control shadow-none searchable-input"
+                 placeholder="Search Style"
+                 autocomplete="off"
+                 value="<%= selectedStyleDisplay %>">
+          <label class="form-label">Style</label>
+          <!-- Hidden input for form submission -->
+          <input type="hidden" class="searchable-hidden" name="style" id="style"
+                 value="<%= formData ? formData.style : '' %>">
+
+          <!-- Dropdown list -->
+          <ul class="list-group position-absolute w-100 mt-1 shadow-sm d-none searchable-list" 
+              style="max-height: 200px; overflow-y: auto; z-index: 1000;">
+
+            <li class="list-group-item list-group-item-action searchable-item" val="primary">Primary</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="secondary">Secondary</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="success">Success</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="danger">Danger</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="warning">Warning</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="info">Info</li>
+            <li class="list-group-item list-group-item-action searchable-item" val="dark">Dark</li>
+          </ul>
+        </div>
+      </div>
 
 
       <!-- Active status -->

@@ -25,8 +25,25 @@
   color: var(--bs-nav-link-hover-color);
 }
 
+/* Icon badge */
+.icon-badge {
+    position: absolute;
+    top: 8px;
+    left: 25px;
+    width: 18px;
+    height: 18px;
+    padding: 5 5px;
+    font-size: 0.65rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(20%, -20%); /* finomhangolás ha kell */
+    box-sizing: content-box;
+  }
 
-
+  /* Ha csak a nav gombokra akarod: */
+  .nav-link.has-badge { position: relative; padding-right: 1.6rem; }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -69,11 +86,13 @@
                 <i class="bi bi-menu-button-wide fs-5 pe-2"></i>Admin Dashboard</a>
           </li>
         <% } %>
-        
+        <% if (Array.isArray(permissons) && permissons.length !== 0) { %>
+
            <li class="nav-item">
             <a href="/dashboard" class="nav-link btn btn-primary m-1 px-3 d-flex align-items-center">
                 <i class="bi bi-menu-button-wide fs-5 pe-2"></i>Dashboard</a>
           </li>
+        <% } %>
 
         <% if (Array.isArray(permissons) && permissons.length !== 0) { %>
 
@@ -84,17 +103,27 @@
             <i class="bi bi-person fs-5 pe-2"></i>
             <%= typeof user !== 'undefined' ? user.username : '' %>
           </a>
-
           </li>
                     <li class="nav-item">
             <a href="/logout" class="nav-link btn btn-danger m-1 px-3 d-flex align-items-center">
                 <i class="bi bi-box-arrow-right fs-5"></i></a>
           </li>
+
+          </li>
+                    <li class="nav-item">
+            <a id="alertButton" onclick="openAlertBox()" class="nav-link btn btn-warning m-1 px-3 d-flex align-items-center has-badge" role="button" aria-label="Alerts">
+            <i class="bi bi-bell-fill fs-5" aria-hidden="true"></i>
+                    <span class="icon-badge bg-danger text-white rounded-circle d-none" id="alertCounter" aria-hidden="true"></span>
+               </a>
+          </li>
         <% } %>
+        <% 
+          const safeFormData = (typeof formData !== 'undefined' && formData) ? formData : null;
+          const dtId = safeFormData && safeFormData.dailytimetable ? String(safeFormData.dailytimetable._id || safeFormData.dailytimetable) : '';
+        %>
         <% if (parent && parent.includes(':did')) { %>
             <li class="nav-item">
-            <a href="<%= parent.split(':did')[0] +  
-            String(  (formData && formData.dailytimetable && (formData.dailytimetable._id || formData.dailytimetable)) || '')%>" class="nav-link btn btn-primary m-1 px-3 d-flex align-items-center">
+            <a href="<%= parent.split(':did')[0] + dtId %>" class="nav-link btn btn-primary m-1 px-3 d-flex align-items-center">
                 <i class="bi bi-arrow-return-left fs-5 "></i></a>
           </li>
         <% } else { %>
@@ -102,8 +131,8 @@
             <a href="<%= parent %>" class="nav-link btn btn-primary m-1 px-3 d-flex align-items-center">
                 <i class="bi bi-arrow-return-left fs-5 "></i></a>
           </li>
-
         <% } %>
+
 
       </ul>
     </div>
@@ -151,18 +180,25 @@
         <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-
+          <% let numberofalerts=0 %>
           <% alerts.forEach(element => { %>
+          
+          <% if (element.active && Array.isArray(permissons) && permissons.includes(element.permission)) { %>
 
-          <% if (Array.isArray(permissons) && permissons.includes(element.permission)) { %>
-
-                <div class="w-100 bg-danger bg-opacity-25 border border-danger rounded p-3 mt-2 mb-2">
-                    <h5><%= element.title %></h5>
+                <div class="w-100 bg-<%=element.style%> bg-opacity-25 border border-<%=element.style%> rounded p-3 mt-2 mb-2">
+                    <h5><%= element.title %><span class="h6 opacity-25 ps-5"><%= element.style == 'primary' ? '(System alert)' : '' %></span></h5>
                     <hr>
                     <p><%= element.description %></p>
+                    <% numberofalerts++ %>
                 </div>  
           <% } %>
           <% }) %>
+          <% if (numberofalerts == 0) { %>
+            <div class="w-100 bg-success bg-opacity-25 border border-success rounded p-3 mt-2 mb-2">
+                    <h5>No alerts found</h5>
+                </div>  
+           
+          <% } %>
 
       </div>
       <div class="modal-footer">
@@ -274,12 +310,8 @@
     const modal = new bootstrap.Modal(document.getElementById('EventViewModal'));
     modal.show();
   }
-  // csak akkor készítjük és mutatjuk az alertet, ha tényleg létezik és szükség van rá
     const alertmodal = new bootstrap.Modal(document.getElementById('AlertViewModal'));
-    // ha szerveroldalról akarod megjeleníteni:
-    // vagy JS feltétel alapján:
-    // if (someCondition) alertmodal.show();
-    //alertmodal.show()
+
 
     function getCookie(name) {
     const cookie = document.cookie
@@ -288,8 +320,10 @@
 
     return cookie ? cookie.split("=")[1] : null;
 }
+    const alertCounter = <%= numberofalerts %>;
 
 
+  if(alertCounter != 0){
     let alertList = [];
     <% alerts.forEach(element => { %>
       <% if (element.active === true) { %>
@@ -320,7 +354,20 @@
       }
 
     }
+  }
+    const alertCounterSpan = document.getElementById("alertCounter")
+  
+    if(alertCounter != 0){
+              alertCounterSpan.innerHTML = alertCounter
+              alertCounterSpan.classList.remove("d-none");
+
+    }
+
+
     
+    function openAlertBox(){
+      alertmodal.show()
+    }
 </script>
 
 </html>

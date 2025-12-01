@@ -41,15 +41,15 @@
         <tbody class="align-middle" id="TableBody">
             <% alerts.forEach(alert => { %>
       <tr>
-        <td><%= alert.title %></td>
-        <td><%= alert.description %></td>
-        <td><%= alert.permission %></td>
-        <td><% if (alert.active) { %>
+        <td class="text-<%= alert.style %>"><%= alert.title %></td>
+        <td class="text-<%= alert.style %>"><%= alert.description %></td>
+        <td class="text-<%= alert.style %>"><%= alert.permission %></td>
+        <td class="text-<%= alert.style %>"><% if (alert.active) { %>
           <%= "Active" %>
         <% } else { %>
           <%= "Inactive" %>
         <% } %></td>
-        <td><%= alert.reappear %></td>
+        <td class="text-<%= alert.style %>"><%= alert.reappear %></td>
         <td class="text-center" style="width: 15%;">
           <a href="/alerts/edit/<%= alert._id %>" class="btn btn-warning btn-sm shadow-none m-1"><i class="bi bi-pen"></i></a>
 

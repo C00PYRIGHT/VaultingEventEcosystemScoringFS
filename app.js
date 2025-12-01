@@ -23,6 +23,7 @@ import JudgesRouter from './routes/judgesRouter.js';
 import dailytimetableRouter from './routes/DtimetableRouter.js';
 import alertRouter from './routes/alertRouter.js';
 import Alert from './models/Alert.js';
+import orderRouter from './routes/orderRouter.js';
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,7 +79,7 @@ app.use((req, res, next) => {
   });
   next();
 });
-const version = '0.0.18';
+const version = '0.0.19';
 app.use(async (req, res, next) => {
     if(TESTDB==='true'){ 
       res.locals.test = true
@@ -104,6 +105,8 @@ app.use('/entry', entryRouter); // Entry útvonalak kezelése
 app.use('/judges', JudgesRouter); // Judges útvonalak kezelése
 app.use('/dailytimetable', dailytimetableRouter); // DailyTimeTable útvonalak kezelése
 app.use('/alerts', alertRouter); // Alert útvonalak kezelése
+app.use('/order', orderRouter); // Order útvonalak kezelése
+
 
 
 

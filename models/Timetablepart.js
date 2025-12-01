@@ -41,9 +41,22 @@ const TimetablePartSchema = new mongoose.Schema({
             required: [true, 'Round required!'],
         },
         StartingOrder: {
-            type: [{ Entry: mongoose.Schema.Types.ObjectId, Order: Number, submittedtables: [mongoose.Schema.Types.ObjectId] }],
-            ref: 'Entries',
+            type: [{
+              Entry: { type: mongoose.Schema.Types.ObjectId, ref: 'Entries', required: [true, 'Entry is required'] },
+              Order: { type: Number, required: [true, 'Order is required'] },
+              submittedtables: [{ type: mongoose.Schema.Types.ObjectId }]
+            }],
             default: [],
+        },
+        drawingDone: {
+            type: Boolean,
+            default: false,
+            required: [true, 'Drawing done status required!'],
+        },
+        conflictsChecked: {
+            type: Boolean,
+            default: false,
+            required: [true, 'Conflicts checked status required!'],
         },
         NumberOfJudges: {
             type: Number,

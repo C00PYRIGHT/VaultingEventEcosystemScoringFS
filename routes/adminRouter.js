@@ -416,7 +416,6 @@ adminRouter.get('/editPermission/:id', Verify, VerifyRole(), async (req, res) =>
 adminRouter.post('/editPermission/:id', Verify, VerifyRole(), async (req, res) => {
     try {
         const { name, displayName, attachedURL, requestType } = req.body;
-        console.debug(req.body)
         const updatedPermission = await Permissions.findByIdAndUpdate(req.params.id, {
             name,
             displayName,
