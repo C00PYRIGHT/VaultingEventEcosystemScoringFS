@@ -27,6 +27,7 @@ import orderRouter from './routes/orderRouter.js';
 import SSTempRouter from './routes/SSTempRouter.js';
 import scoringRouter from './routes/scoringRouter.js';
 import mappingRouter from './routes/mappingRouter.js';
+import resultRouter from './routes/resultRouter.js';
 // Az aktuális fájl és könyvtár meghatározása
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,14 +82,14 @@ app.use((req, res, next) => {
   });
   next();
 });
-const version = '0.0.23';
+const version = '0.0.24';
 app.use(async (req, res, next) => {
     if(TESTDB==='true'){ 
       res.locals.test = true
   }else{
       res.locals.test = false
   }
-  res.locals.alerts= await Alert.find({ active: true });
+  res.locals.alerts= await Alert.find({ active: true }).populate('permission');
   res.locals.parent = '/dashboard';
   res.locals.selectedEvent = await Event.findOne({ selected: true });
   res.locals.version = version;
@@ -111,6 +112,7 @@ app.use('/order', orderRouter); // Order útvonalak kezelése
 app.use('/scoresheets', SSTempRouter); // ScoreSheetTemp útvonalak kezelése
 app.use('/scoring', scoringRouter); // Scoring útvonalak kezelése
 app.use('/mapping', mappingRouter); // Mapping útvonalak kezelése
+app.use('/result', resultRouter); // Result útvonalak kezelése
 
 
 

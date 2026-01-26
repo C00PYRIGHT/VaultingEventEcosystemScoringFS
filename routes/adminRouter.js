@@ -13,6 +13,7 @@ const adminRouter = express.Router();
 import bcrypt from 'bcrypt';
 import Permissions from '../models/Permissions.js';
 import DashCards from '../models/DashCards.js';
+import Alert from '../models/Alert.js';
 
 
 
@@ -322,14 +323,7 @@ adminRouter.get("/dashboard/permissions", Verify, VerifyRole(), async (req, res)
         const RoleList = await Role.find();
         const RolePermNumList = [];
         for (const perm of permissions) {
-            let CountRolesbyPermissionId = 0;
-            for (const role of RoleList) {
-               if( role.permissions.includes(perm.name)){
-                    CountRolesbyPermissionId++;
-                }
-               
-            }
-            RolePermNumList.push({ permID: perm._id, count: CountRolesbyPermissionId });
+            RolePermNumList.push({ permID: perm._id, Rolecount: await Role.countDocuments({ permissions: perm.name }), Cardcount: await DashCards.countDocuments({ perm: perm.name }), Alertcount: await Alert.countDocuments({ permission: perm.name }) });
         }
         res.render("admin/permdash", {
             rolepermNumList: RolePermNumList,
@@ -417,12 +411,11 @@ adminRouter.get('/editPermission/:id', Verify, VerifyRole(), async (req, res) =>
 
 adminRouter.post('/editPermission/:id', Verify, VerifyRole(), async (req, res) => {
     try {
-        const { name, displayName, attachedURL, requestType } = req.body;
+        const { displayName, attachedURL } = req.body;
         const updatedPermission = await Permissions.findByIdAndUpdate(req.params.id, {
-            name,
-            displayName,
-            attachedURL,
-            requestType
+            displayName: displayName,
+            attachedURL: attachedURL,
+            
         }, { runValidators: true });
 
         if (!updatedPermission) {
@@ -459,7 +452,16 @@ adminRouter.delete('/deletePermission/:permId', Verify, VerifyRole(), async (req
             req.session.failMessage = 'Permission not found.';
             return res.status(404).send('Permission not found.');
         }
-
+        const CardCount = await DashCards.countDocuments({ requiredPermissions: permission.name });
+        if (CardCount > 0) {
+            req.session.failMessage = 'Cannot delete permission. It is assigned to one or more dashboard cards.';
+            return res.status(400).send('Cannot delete permission. It is assigned to one or more dashboard cards.');
+        }
+        const alertCount = await Alert.countDocuments({ requiredPermissions: permission.name });
+        if (alertCount > 0) {
+            req.session.failMessage = 'Cannot delete permission. It is assigned to one or more alerts.';
+            return res.status(400).send('Cannot delete permission. It is assigned to one or more alerts.');
+        }
         const roleCount = await Role.countDocuments({ permissions: permission.name });
         if (roleCount > 0) {
             req.session.failMessage = 'Cannot delete permission. It is assigned to one or more roles.';

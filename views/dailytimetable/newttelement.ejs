@@ -94,8 +94,7 @@
           <select class="form-select shadow-none" id="Round" name="Round" required>
             <option value="">Select round</option>
             <option value="1" <%= formData && formData.Round === '1' ? 'selected' : '' %>>1</option>
-            <option value="2" <%= formData && formData.Round === '2' ? 'selected' : '' %>>2</option>
-            <option value="Final" <%= formData && formData.Round === 'Final' ? 'selected' : '' %>>Final</option>
+            <option value="2 - Final" <%= formData && formData.Round === '2 - Final' ? 'selected' : '' %>>2 - Final</option>
           </select>
           <label for="Round">Round</label>
         </div>

@@ -1,3 +1,4 @@
+
 function listCreator(searchInput, hiddenInput, list, items, icon) {
     if (!searchInput || !hiddenInput || !list) return;
 
@@ -274,8 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
+    function excelRound(value, decimals = 1) {
+        const multiplier = Math.pow(10, decimals);
+        return (Math.round((value * multiplier) + Number.EPSILON) / multiplier).toFixed(decimals);
+    }      
 
   document.addEventListener('DOMContentLoaded', () => {
+
+ 
 
       document.querySelectorAll('.searchable-dropdown').forEach(wrapper => {
         const input = wrapper.querySelector('.searchable-input');
@@ -290,3 +297,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     
     });
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        ShowErrorToast('1 minute left before auto logout due to inactivity.');
+    }, 19 * 60 * 1000); // 19 minutes
+
+    setTimeout(() => {
+        window.location.reload();
+
+    }, 21 * 60 * 1000); // 21 minutes
+
+});

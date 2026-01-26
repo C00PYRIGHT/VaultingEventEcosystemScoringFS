@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { type } from 'os';
 
 const ScoreSchema = new mongoose.Schema({
     event: {
@@ -12,27 +11,23 @@ const ScoreSchema = new mongoose.Schema({
         ref: 'entries',
         required: [true, 'Entry required!'],
     },
-    round: {
-        type: String,
-        required: [true, 'Round required!'],
-    },
-    type: {
-        type: String,
-        enum: ['compulsory', 'freestyle','technical'],
-        required: [true, 'Type required!'],
-    },
     timetablepart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'timetableparts',
         required: [true, 'Timetable part required!'],
     },
-    scoresheets: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'scoressheet',
-    required: [true, 'Score required!'],
-    },
-
-    score: {
+    scoresheets: [{
+        scoreId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'scoresheets',
+            required: [true, 'Score required!'],
+        },
+        table: {
+            type: String,
+            required: [true, 'Table required!'],
+        }
+    }],
+    TotalScore: {
         type: Number,
         required: [true, 'Score required!'],
     },

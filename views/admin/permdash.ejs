@@ -33,6 +33,9 @@
             <th scope="col">Display Name</th>
             <th scope="col">Attached URL</th>
             <th scope="col">Attached Roles</th>
+            <th scope="col">Attached Cards</th>
+            <th scope="col">Attached Alerts</th>
+
 
             <th scope="col">&nbsp;</th>
 
@@ -49,8 +52,13 @@
 
 
                                 <td>
-                  <%= (rolepermNumList.find(permuser => permuser.permID === permission._id) || {count: 0}).count %>
+                  <%= (rolepermNumList.find(permuser => permuser.permID === permission._id) || {count: 0}).Rolecount %>
                 </td>
+                                                <td>
+                  <%= (rolepermNumList.find(permuser => permuser.permID === permission._id) || {count: 0}).Cardcount %>
+                </td>
+                                <td>
+                  <%= (rolepermNumList.find(permuser => permuser.permID === permission._id) || {count: 0}).Alertcount %>
 
 
                 <td class="text-center" style="width: 15%;">

@@ -1,0 +1,53 @@
+<div class="container my-4 border border-black border-1 border-opacity-25 rounded p-2" >
+  <ul class="list-group">
+
+    <li class="list-group-item border-0">
+        <h3 class="text-center">Result Group Management</h3>
+    </li>
+    
+  </ul>
+
+
+
+<table class="table table-bordered w-100 m-0" id="TableBody">
+
+
+        <tbody class="align-middle text-center"  >
+
+            <% resultGroups.forEach(resultGroup => { %>
+
+            <tr>
+            <td colspan="3" class="p-0" >
+            <table class="table table-bordered table-hover m-0 p-0 w-100">
+                <tbody class="align-middle text-center">
+            <tr>
+                <td colspan="3"><a  class="btn btn-outline-primary" href="/result/detailed/<%= resultGroup._id %>/total">Category: <%= resultGroup.category.CategoryDispName %></a></td> 
+               
+            </tr>
+            <tr>
+                <td colspan="2" ><a class="btn btn-outline-secondary" href="/result/detailed/<%= resultGroup._id %>/R1"> Round 1 -- <%= Number(resultGroup.calcTemplate.round1FirstP) + Number(resultGroup.calcTemplate.round1SecondP) %>%</a></td>
+                <td colspan="1">  <a class="btn btn-outline-secondary" href="/result/detailed/<%= resultGroup._id %>/R2"> Round 2 -- <%= resultGroup.calcTemplate.round2FirstP %>%</a></td>
+            </tr>
+           <!-- <tr>
+                <td colspan="1" width="22.5%">  <%= resultGroup.calcTemplate.round1FirstP  %>% -- First program:</td>
+                <td colspan="1" width="22.5%"><%= resultGroup.calcTemplate.round1SecondP  %>% -- Second program:</td>
+                <td colspan="1"width="45%"><%= resultGroup.calcTemplate.round2FirstP %>% -- First program:</td>-->
+            </tr>
+            <tr>
+                <td colspan="1" width="22.5%"> <a class="<%= resultGroup.round1First ? 'btn btn-outline-dark' : 'btn' %>" <%= resultGroup.round1First ? 'href=/result/detailed/'+ resultGroup._id + '/R1F' : '' %>><%= resultGroup.round1First?.dailytimetable.DayName %> - <%= resultGroup.round1First?.Name %></a></td>
+                <td colspan="1"width="22.5%"><a class="<%= resultGroup.round1Second ? 'btn btn-outline-dark' : 'btn' %>" <%= resultGroup.round1Second ? 'href=/result/detailed/'+ resultGroup._id + '/R1S' : '' %>><%= resultGroup.round1Second?.dailytimetable.DayName %> - <%= resultGroup.round1Second?.Name %></a></td>
+                <td colspan="1"width="45%"><a class="<%= resultGroup.round2First ? 'btn btn-outline-dark' : 'btn' %>" <%= resultGroup.round2First ? 'href=/result/detailed/'+ resultGroup._id + '/R2F' : '' %>><%= resultGroup.round2First?.dailytimetable.DayName %> - <%= resultGroup.round2First?.Name %></a></td>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+                                        <tr><td colspan="4" class="bg-primary bg-opacity-10" height="50px"></td></tr>
+
+            <% }) %>
+            
+        </tbody>
+    </table>
+
+
+

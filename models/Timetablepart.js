@@ -37,7 +37,7 @@ const TimetablePartSchema = new mongoose.Schema({
         },
         Round: {
             type: String,
-            enum: ['1', '2', 'Final'],
+            enum: ['1', '2 - Final', ],
             required: [true, 'Round required!'],
         },
         StartingOrder: {

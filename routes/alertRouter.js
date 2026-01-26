@@ -50,7 +50,7 @@ alertRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
   }
 });
   alertRouter.get('/dashboard',Verify, VerifyRole(), async (req, res) => {
-        const alerts = await Alert.find().sort({ name: 1 });
+        const alerts = await Alert.find().sort({ name: 1 }).populate('permission');
         res.render('alert/alertdash', {
             alerts,
             rolePermissons: req.user?.role?.permissions,

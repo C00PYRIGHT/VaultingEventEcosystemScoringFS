@@ -1030,10 +1030,7 @@ function parseLocaleNumber(value) {
   return parseFloat(value.replace(',', '.'));
 }
 
-function excelRound(value, decimals = 1) {
-  const multiplier = Math.pow(10, decimals);
-  return (Math.round((value * multiplier) + Number.EPSILON) / multiplier).toFixed(decimals);
-}
+
 
 function nullLimit(value){
   if( value <= 0){

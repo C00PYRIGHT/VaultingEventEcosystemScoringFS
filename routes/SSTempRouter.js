@@ -48,7 +48,7 @@ ScoreSheetTempRouter.get('/dashboard', Verify, VerifyRole(), async (req, res) =>
     const sheets = await ScoreSheetTemp.find()
       .populate('CategoryId');
 
-    res.render('SStemp/dashboard', {
+    res.render('ssTemp/dashboard', {
       ssTemps: sheets,
       rolePermissons: req.user?.role?.permissions,
       failMessage: req.session.failMessage,
@@ -68,7 +68,7 @@ ScoreSheetTempRouter.get('/create', Verify, VerifyRole(), async (req, res) => {
   try {
        const   categorys=  await Category.find().sort({ Star: 1 })
 
-    res.render('SStemp/newScoreSheet', {
+    res.render('ssTemp/newScoreSheet', {
       categorys: categorys,
 
       formData: req.session.formData,
@@ -143,7 +143,7 @@ ScoreSheetTempRouter.post('/create', Verify, VerifyRole(), uploadImage.single('b
       ? 'Duplicate template combination (TestType, typeOfScores, numberOfJudges, CategoryId).'
       : (err?.message || 'Server error');
 
-    return res.render('SStemp/newScoreSheet', {
+    return res.render('ssTemp/newScoreSheet', {
       categorys: await Category.find().sort({ Star: 1 }),
 
       formData: forerr,
@@ -167,7 +167,7 @@ ScoreSheetTempRouter.get('/edit/:id', Verify, VerifyRole(), async (req, res) => 
     }
 
     const categorys = await Category.find().sort({ Star: 1 });
-    res.render('SStemp/editScoreSheet', {
+    res.render('ssTemp/editScoreSheet', {
       categorys: categorys,
       formData: sheet,
       rolePermissons: req.user?.role?.permissions,
@@ -244,7 +244,7 @@ ScoreSheetTempRouter.post('/edit/:id', Verify, VerifyRole(), uploadImage.single(
     logger.error(err + ' User: ' + req.user.username);
     const errorMessage = err?.code === 11000 ? 'Duplicate template combination.' : (err?.message || 'Server error');
     const categorys = await Category.find().sort({ Star: 1 });
-    return res.render('SStemp/editScoreSheet', {
+    return res.render('ssTemp/editScoreSheet', {
       categorys: categorys,
       formData: forerr,
       rolePermissons: req.user?.role?.permissions,

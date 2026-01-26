@@ -242,9 +242,10 @@ entryRouter.post('/new',Verify, VerifyRole(), async (req, res) => {
         
         const uniqueHorses = Array.from(new Set(horsesontheEvent.map(entry => entry.horse._id.toString())));
         const horses = await Horse.find({ _id: { $in: uniqueHorses },}).sort({ name: 1 });
+        horses.forEach(horse => {
         horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
         horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
-        
+        });
         res.render('entry/vetcheckdash', {
             horses,
             rolePermissons: req.user?.role?.permissions,

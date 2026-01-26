@@ -99,7 +99,7 @@ dailytimetableRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res
             return res.redirect('/dailytimetable/dashboard');
           }
 
-          res.render('dailytimetable/editDailyTimeTable', {
+          res.render('dailytimetable/editdailytimetable', {
             formData: dailytimetable,
             rolePermissons: req.user?.role?.permissions,
             failMessage: req.session.failMessage,
@@ -295,8 +295,9 @@ dailytimetableRouter.post('/new',Verify, VerifyRole(), Validate, async (req, res
             ? Object.values(err.errors).map(e => e.message).join(' ')
             : (err.message || 'Server error');
           const categorys = await Category.find().sort({ Star: 1 });
+           const judges = users.filter(u => u.role?.roleName.includes('Judge'));
           return res.render('dailytimetable/editttelement', {
-            
+            judges,
             days: await DailyTimeTable.find({event: res.locals.selectedEvent._id}).sort({Date: 1}),
             categorys: categorys,
             formData: { ...req.body, _id: req.params.id },
