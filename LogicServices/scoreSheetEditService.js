@@ -3,14 +3,14 @@ import TimetablePart from '../models/Timetablepart.js';
 import ScoreSheet from '../models/ScoreSheet.js';
 import { logger } from '../logger.js';
 import { syncScoreTable } from './scoreSync.js';
-import { calculateScore } from './scoreCalculations.js';
+import { calculateScore } from './scoreCalculations.js';ű
+import asyncHandler from 'express-async-handler';
 
 /**
  * Process and save edited score sheet
  * Validates input data, calculates scores, updates related records
  */
-export async function editScoreSheet(req, res) {
-  try {
+export const editScoreSheet = asyncHandler(async (req, res) => {
     const inputDatasArray = Object.entries(req.body.ScoreSheetInput).map(
       ([key, value]) => ({
         id: key,
@@ -63,12 +63,5 @@ export async function editScoreSheet(req, res) {
 
     req.session.successMessage = 'Score sheet saved successfully!';
     return res.redirect('/scoring/office/dashboard');
-  } catch (err) {
-    logger.error(err + ' User: ' + req.user.username);
-    const errorMessage = err.errors
-      ? Object.values(err.errors).map((e) => e.message).join(' ')
-      : 'Server error';
-    req.session.failMessage = 'Server error: ' + errorMessage;
-    return res.redirect('/scoring/office/dashboard');
-  }
-}
+ 
+} );

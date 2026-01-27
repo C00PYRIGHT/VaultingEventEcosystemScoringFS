@@ -1,8 +1,10 @@
+import { asyncHandler } from '../middleware/asyncHandler.js';
+
 /**
  * @route GET /creators
  * @desc Show creators page
  */
-async function getCreatorsPage(req, res) {
+const getCreatorsPage = asyncHandler(async (req, res) => {
     res.render('creators', {
         successMessage: req.session?.successMessage, 
         rolePermissons: req.user?.role.permissions,
@@ -10,7 +12,7 @@ async function getCreatorsPage(req, res) {
         formData: req.session?.formData,
         user: req?.user
     });
-};
+});
 
 export default {
     getCreatorsPage

@@ -1,4 +1,5 @@
 import { logger } from '../logger.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import {
     getAllRoles,
     getRoleById,
@@ -13,162 +14,99 @@ import {
  * @route GET /admin/dashboard/roles
  * @desc Show roles dashboard with user counts
  */
-async function getRolesDashboard(req, res) {
-    try {
-        const { roles, RoleNumList } = await getAllRolesWithUserCounts();
-        res.render("admin/roledash", {
-            rolenumlist: RoleNumList,
-            rolePermissons: req.user.role.permissions,
-            roles: roles,
-            failMessage: req.session.failMessage,
-            successMessage: req.session.successMessage,
-            user: req.user
-        });
-        req.session.failMessage = null;
-        req.session.successMessage = null;
-    } catch (err) {
-        logger.error(err + " User: " + req.user.username);
-        res.status(500).send('Server Error');
-    }
-};
+const getRolesDashboard = asyncHandler(async (req, res) => {
+    const { roles, RoleNumList } = await getAllRolesWithUserCounts();
+    res.render("admin/roledash", {
+        rolenumlist: RoleNumList,
+        rolePermissons: req.user.role.permissions,
+        roles: roles,
+        failMessage: req.session.failMessage,
+        successMessage: req.session.successMessage,
+        user: req.user
+    });
+    req.session.failMessage = null;
+    req.session.successMessage = null;
+});
 
 /**
  * @route GET /admin/newRole
  * @desc Show new role form
  */
-async function getNewRoleForm(req, res) {
-    try {
-        const { permissions } = await getRoleFormData();
-        res.render("admin/newRole", {
-            permissions: permissions,
-            rolePermissons: req.user.role.permissions,
-            failMessage: req.session.failMessage,
-            formData: req.session.formData,
-            successMessage: req.session.successMessage,
-            user: req.user
-        });
-        req.session.formData = null;
-        req.session.failMessage = null;
-        req.session.successMessage = null;
-    } catch (err) {
-        logger.error(err + " User: " + req.user.username);
-        req.session.failMessage = 'Error loading role form';
-        res.redirect('/admin/dashboard/roles');
-    }
-};
+const getNewRoleForm = asyncHandler(async (req, res) => {
+    const { permissions } = await getRoleFormData();
+    res.render("admin/newRole", {
+        permissions: permissions,
+        rolePermissons: req.user.role.permissions,
+        failMessage: req.session.failMessage,
+        formData: req.session.formData,
+        successMessage: req.session.successMessage,
+        user: req.user
+    });
+    req.session.formData = null;
+    req.session.failMessage = null;
+    req.session.successMessage = null;
+});
 
 /**
  * @route POST /admin/newRole
  * @desc Create new role
  */
-async function createNewRoleHandler(req, res) {
-    try {
-        const newRole = await createRole(req.body);
-        logger.db(`Role ${newRole.roleName} created by user ${req.user.username}.`);
-        req.session.successMessage = 'Role created successfully.';
-        res.redirect('/admin/dashboard/roles');
-    } catch (err) {
-        logger.error(err + " User: " + req.user.username);
-        const errorMessage = err.errors
-            ? Object.values(err.errors).map(e => e.message).join(' ')
-            : 'Server error';
-        req.session.failMessage = errorMessage;
-        const { permissions } = await getRoleFormData();
-        return res.render('admin/newRole', {
-            permissions: permissions,
-            rolePermissons: req.user.role.permissions,
-            failMessage: req.session.failMessage,
-            formData: req.session.formData,
-            successMessage: req.session.successMessage,
-            user: req.user
-        });
-    }
-};
+const createNewRoleHandler = asyncHandler(async (req, res) => {
+    const newRole = await createRole(req.body);
+    logger.db(`Role ${newRole.roleName} created by user ${req.user.username}.`);
+    req.session.successMessage = 'Role created successfully.';
+    res.redirect('/admin/dashboard/roles');
+});
 
 /**
  * @route GET /admin/editRole/:id
  * @desc Show edit role form
  */
-async function getEditRoleForm(req, res) {
-    try {
-        const role = await getRoleById(req.params.id);
-        if (!role) {
-            req.session.failMessage = 'Role not found.';
-            return res.redirect('/admin/dashboard/roles');
-        }
-        const { permissions } = await getRoleFormData();
-        res.render('admin/editRole', {
-            permissions: permissions,
-            rolePermissons: req.user.role.permissions,
-            failMessage: req.session.failMessage,
-            successMessage: req.session.successMessage,
-            formData: role,
-            user: req.user
-        });
-        req.session.successMessage = null;
-        req.session.failMessage = null;
-    } catch (err) {
-        logger.error(err + " User: " + req.user.username);
-        res.status(500).send('Server Error');
+const getEditRoleForm = asyncHandler(async (req, res) => {
+    const role = await getRoleById(req.params.id);
+    if (!role) {
+        req.session.failMessage = 'Role not found.';
+        return res.redirect('/admin/dashboard/roles');
     }
-};
+    const { permissions } = await getRoleFormData();
+    res.render('admin/editRole', {
+        permissions: permissions,
+        rolePermissons: req.user.role.permissions,
+        failMessage: req.session.failMessage,
+        successMessage: req.session.successMessage,
+        formData: role,
+        user: req.user
+    });
+    req.session.successMessage = null;
+    req.session.failMessage = null;
+});
 
 /**
  * @route POST /admin/editRole/:id
  * @desc Update role
  */
-async function updateRoleHandler(req, res) {
-    try {
-        const updatedRole = await updateRole(req.params.id, req.body);
-        logger.db(`Role ${req.body.roleName} updated by user ${req.user.username}.`);
-        if (!updatedRole) {
-            req.session.failMessage = 'Role not found.';
-            return res.redirect('/admin/dashboard/roles');
-        }
-        req.session.successMessage = 'Role updated successfully.';
-        res.redirect('/admin/dashboard/roles');
-    } catch (err) {
-        logger.error(err + " User: " + req.user.username);
-        const errorMessage = err.errors
-            ? Object.values(err.errors).map(e => e.message).join(' ')
-            : 'Server error';
-        req.session.failMessage = errorMessage;
-        const { permissions } = await getRoleFormData();
-        return res.render('admin/editRole', {
-            permissions: permissions,
-            rolePermissons: req.user.role.permissions,
-            failMessage: req.session.failMessage,
-            formData: req.session.formData,
-            successMessage: req.session.successMessage,
-            user: req.user
-        });
+const updateRoleHandler = asyncHandler(async (req, res) => {
+    const updatedRole = await updateRole(req.params.id, req.body);
+    logger.db(`Role ${req.body.roleName} updated by user ${req.user.username}.`);
+    if (!updatedRole) {
+        req.session.failMessage = 'Role not found.';
+        return res.redirect('/admin/dashboard/roles');
     }
-};
+    req.session.successMessage = 'Role updated successfully.';
+    res.redirect('/admin/dashboard/roles');
+});
 
 /**
  * @route DELETE /admin/deleteRole/:roleId
  * @desc Delete role
  */
-async function deleteRoleHandler(req, res) {
-    try {
-        const roleId = req.params.roleId;
-        const role = await deleteRole(roleId);
-        logger.db(`Role ${role.roleName} deleted by user ${req.user.username}.`);
-        req.session.successMessage = 'Role successfully deleted.';
-        res.status(200).send('Role deleted.');
-    } catch (err) {
-        logger.error("Err:" + err.toString());
-        if (err.message === 'Role not found') {
-            req.session.failMessage = 'Role not found.';
-            return res.status(404).send('Role not found.');
-        }
-        if (err.message.includes('Cannot delete role')) {
-            req.session.failMessage = err.message;
-            return res.status(400).send(err.message);
-        }
-        res.status(500).send('Server Error');
-    }
-};
+const deleteRoleHandler = asyncHandler(async (req, res) => {
+    const roleId = req.params.roleId;
+    const role = await deleteRole(roleId);
+    logger.db(`Role ${role.roleName} deleted by user ${req.user.username}.`);
+    req.session.successMessage = 'Role successfully deleted.';
+    res.status(200).send('Role deleted.');
+});
 
 export default {
     getRolesDashboard,

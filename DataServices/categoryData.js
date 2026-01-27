@@ -44,21 +44,15 @@ export const updateCategory = async (id, data) => {
         throw new Error('Category not found');
     }
 
-    try {
-        // Delete old category
-        await Category.findByIdAndDelete(id);
-        
-        // Create new category with updated data
-        const updateData = { ...data, _id: id };
-        const updated = new Category(updateData);
-        await updated.save();
-        
-        return updated;
-    } catch (err) {
-        // Restore old category on error
-        await oldCategory.save();
-        throw err;
-    }
+    // Delete old category
+    await Category.findByIdAndDelete(id);
+    
+    // Create new category with updated data
+    const updateData = { ...data, _id: id };
+    const updated = new Category(updateData);
+    await updated.save();
+    
+    return updated;
 };
 
 /**

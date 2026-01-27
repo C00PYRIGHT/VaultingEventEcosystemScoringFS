@@ -1,4 +1,5 @@
 import { logger } from '../logger.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import {
   getAllLungers,
   getLungerById,
@@ -210,161 +211,102 @@ const countries = [
   "Zimbabwe"
 ];
 
-class LungerController {
-  renderNew = (req, res) => {
-    res.render('lunger/newLunger', {
-      countries: countries,
-      formData: req.session.formData,
-      rolePermissons: req.user?.role?.permissions,
-      failMessage: req.session.failMessage,
-      successMessage: req.session.successMessage,
-      user: req.user
-    });
-    req.session.failMessage = null;
-    req.session.successMessage = null;
-  }
 
-  createNew = async (req, res) => {
-    try {
-      const newLunger = await createLunger(req.body);
-      logger.db(`Lunger ${newLunger.Name} created by user ${req.user.username}.`);
-      req.session.successMessage = 'Lunger created successfully!';
-      res.redirect('/lunger/dashboard');
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
+const renderNew = (req, res) => {
+  res.render('lunger/newLunger', {
+    countries: countries,
+    formData: req.session.formData,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+};
 
-      const errorMessage = err.errors
-        ? Object.values(err.errors).map(e => e.message).join(' ')
-        : 'Server error';
+const createNew = asyncHandler(async (req, res) => {
+  const newLunger = await createLunger(req.body);
+  logger.db(`Lunger ${newLunger.Name} created by user ${req.user.username}.`);
+  req.session.successMessage = 'Lunger created successfully!';
+  res.redirect('/lunger/dashboard');
+});
 
-      return res.render('lunger/newLunger', {
-        permissionList: await getAllPermissions(),
-        formData: req.body,
-        successMessage: null,
-        countries: countries,
-        failMessage: errorMessage,
-        card: { ...req.body, _id: req.params.id },
-        user: req.user
-      });
-    }
-  }
+const dashboard = asyncHandler(async (req, res) => {
+  const lungers = await getAllLungers();
+  res.render('lunger/lungerdash', {
+    lungers,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-  dashboard = async (req, res) => {
-    try {
-      const lungers = await getAllLungers();
-      res.render('lunger/lungerdash', {
-        lungers,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/dashboard');
-    }
-  }
+const details = asyncHandler(async (req, res) => {
+  const lunger = await getLungerByIdWithPopulation(req.params.id);
+  res.render('lunger/LungerDetail', {
+    users: await getAllUsers(),
+    formData: lunger,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-  details = async (req, res) => {
-    try {
-      const lunger = await getLungerByIdWithPopulation(req.params.id);
-      res.render('lunger/LungerDetail', {
-        users: await getAllUsers(),
-        formData: lunger,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/lunger/dashboard');
-    }
-  }
+const editGet = asyncHandler(async (req, res) => {
+  const lunger = await getLungerById(req.params.id);
+  res.render('lunger/editLunger', {
+    countries: countries,
+    formData: lunger,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-  editGet = async (req, res) => {
-    try {
-      const lunger = await getLungerById(req.params.id);
-      res.render('lunger/editLunger', {
-        countries: countries,
-        formData: lunger,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/lunger/dashboard');
-    }
-  }
+const editPost = asyncHandler(async (req, res) => {
+  const lunger = await updateLunger(req.params.id, req.body);
+  logger.db(`Lunger ${lunger.Name} updated by user ${req.user.username}.`);
+  req.session.successMessage = 'Lunger updated successfully!';
+  res.redirect('/lunger/dashboard');
+});
 
-  editPost = async (req, res) => {
-    try {
-      const lunger = await updateLunger(req.params.id, req.body);
-      logger.db(`Lunger ${lunger.Name} updated by user ${req.user.username}.`);
-      req.session.successMessage = 'Lunger updated successfully!';
-      res.redirect('/lunger/dashboard');
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
+const deleteIncident = asyncHandler(async (req, res) => {
+  const lunger = await deleteLungerIncident(req.params.id, {
+    description: req.body.description,
+    type: req.body.type
+  });
+  logger.db(`Lunger ${lunger.Name} incident deleted by user ${req.user.username}.`);
+  res.status(200).json({ message: 'Incident deleted successfully' });
+});
 
-      const errorMessage = err.errors
-        ? Object.values(err.errors).map(e => e.message).join(' ')
-        : (err.message || 'Server error');
+const newIncidentPost = asyncHandler(async (req, res) => {
+  const lunger = await addLungerIncident(req.params.id, {
+    description: req.body.description,
+    incidentType: req.body.incidentType,
+    userId: req.user._id,
+    eventId: res.locals.selectedEvent._id
+  });
+  logger.db(`Lunger ${lunger.Name} incident created by user ${req.user.username}.`);
+  res.status(200).json({ message: 'Incident added successfully!' });
+});
 
-      return res.render('lunger/editLunger', {
-        permissionList: await getAllPermissions(),
-        formData: { ...req.body, _id: req.params.id },
-        successMessage: null,
-        failMessage: errorMessage,
-        user: req.user
-      });
-    }
-  }
-
-  deleteIncident = async (req, res) => {
-    try {
-      const lunger = await deleteLungerIncident(req.params.id, {
-        description: req.body.description,
-        type: req.body.type
-      });
-      logger.db(`Lunger ${lunger.Name} incident deleted by user ${req.user.username}.`);
-      res.status(200).json({ message: 'Incident deleted successfully' });
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      res.status(500).json({ message: err.message || 'Server error' });
-    }
-  }
-
-  newIncidentPost = async (req, res) => {
-    try {
-      const lunger = await addLungerIncident(req.params.id, {
-        description: req.body.description,
-        incidentType: req.body.incidentType,
-        userId: req.user._id,
-        eventId: res.locals.selectedEvent._id
-      });
-      logger.db(`Lunger ${lunger.Name} incident created by user ${req.user.username}.`);
-      res.status(200).json({ message: 'Incident added successfully!' });
-    } catch (err) {
-      logger.error(err + " User: " + req.user.username);
-      const errorMessage = err.errors
-        ? Object.values(err.errors).map(e => e.message).join(' ')
-        : (err.message || 'Server error');
-      req.session.failMessage = errorMessage;
-      res.status(500).json({ message: errorMessage });
-    }
-  }
-}
-
-export default new LungerController();
+export default {
+  renderNew,
+  createNew,
+  dashboard,
+  details,
+  editGet,
+  editPost,
+  deleteIncident,
+  newIncidentPost
+};

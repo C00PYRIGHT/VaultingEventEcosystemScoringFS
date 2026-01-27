@@ -1,4 +1,5 @@
 import { logger } from '../logger.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import { 
     getAllScoreSheetTemplates, 
     getScoreSheetTemplateById, 

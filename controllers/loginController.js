@@ -1,8 +1,10 @@
+import { asyncHandler } from '../middleware/asyncHandler.js';
+
 /**
  * @route GET /login
  * @desc Show login page
  */
-async function getLoginPage(req, res) {
+const getLoginPage = asyncHandler(async (req, res) => {
     const failMessage = req.session.failMessage;
     res.render("login", { 
         failMessage, 
@@ -11,7 +13,7 @@ async function getLoginPage(req, res) {
     });
     req.session.failMessage = null;
     req.session.successMessage = null;
-};
+});
 
 export default {
     getLoginPage

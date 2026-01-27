@@ -1,4 +1,5 @@
 import { logger } from '../logger.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import {
   getAllHorses,
   getHorseById,
@@ -211,225 +212,151 @@ const countries = [
   "Zimbabwe"
 ];
 
-class HorseController {
-  renderNew = (req, res) => {
-    res.render('horse/newHorse', {
-      countries: countries,
-      formData: req.session.formData,
-      rolePermissons: req.user?.role?.permissions,
-      failMessage: req.session.failMessage,
-      successMessage: req.session.successMessage,
-      user: req.user
-    });
-    req.session.failMessage = null;
-    req.session.successMessage = null;
-  }
 
-  createNew = async (req, res) => {
-    const forerr = req.body;
-    forerr.box = req.body.BoxNr;
-    forerr.head = req.body.HeadNr;
-    try {
-      const headNr = req.body.HeadNr;
-      const boxNr = req.body.BoxNr;
-      delete req.body.HeadNr;
-      delete req.body.BoxNr;
-      const newHorse = await createHorse(req.body, headNr, boxNr, res.locals.selectedEvent._id);
-      logger.db(`Horse ${newHorse.Horsename} created by user ${req.user.username}.`);
-      req.session.successMessage = 'Horse created successfully!';
-      res.redirect('/horse/dashboard');
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
+const renderNew = (req, res) => {
+  res.render('horse/newHorse', {
+    countries: countries,
+    formData: req.session.formData,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+};
 
-      if (err?.code === 11000) {
-        const duplicateField = Object.keys(err.keyValue)[0];
-        const errorMessage = `A horse with this ${duplicateField} already exists. Please use a different ${duplicateField}.`;
-        return res.render('horse/newHorse', {
-          permissionList: await getAllPermissions(),
-          countries: countries,
-          formData: forerr,
-          successMessage: null,
-          failMessage: errorMessage,
-          card: { ...req.body, _id: req.params.id },
-          user: req.user
-        });
-      }
-      const errorMessage = err.errors
-        ? Object.values(err.errors).map(e => e.message).join(' ')
-        : 'Server error';
+const createNew = asyncHandler(async (req, res) => {
+  const forerr = req.body;
+  forerr.box = req.body.BoxNr;
+  forerr.head = req.body.HeadNr;
+  const headNr = req.body.HeadNr;
+  const boxNr = req.body.BoxNr;
+  delete req.body.HeadNr;
+  delete req.body.BoxNr;
+  const newHorse = await createHorse(req.body, headNr, boxNr, res.locals.selectedEvent._id);
+  logger.db(`Horse ${newHorse.Horsename} created by user ${req.user.username}.`);
+  req.session.successMessage = 'Horse created successfully!';
+  res.redirect('/horse/dashboard');
+});
 
-      return res.render('horse/newHorse', {
-        permissionList: await getAllPermissions(),
-        countries: countries,
-        formData: forerr,
-        successMessage: null,
-        failMessage: errorMessage,
-        card: { ...req.body, _id: req.params.id },
-        user: req.user
-      });
-    }
-  }
+const dashboard = asyncHandler(async (req, res) => {
+  const horses = await getAllHorses();
+  horses.forEach(horse => {
+    horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
+    horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
+  });
+  res.render('horse/horsedash', {
+    horses,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-  dashboard = async (req, res) => {
-    const horses = await getAllHorses();
-    horses.forEach(horse => {
-      horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
-      horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
-    });
-    res.render('horse/horsedash', {
-      horses,
-      rolePermissons: req.user?.role?.permissions,
-      failMessage: req.session.failMessage,
-      successMessage: req.session.successMessage,
-      user: req.user
-    });
-    req.session.failMessage = null;
-    req.session.successMessage = null;
-  }
+const details = asyncHandler(async (req, res) => {
+  const horse = await getHorseByIdWithPopulation(req.params.id);
+  horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
+  horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
 
-  details = async (req, res) => {
-    try {
-      const horse = await getHorseByIdWithPopulation(req.params.id);
-      horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
-      horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
+  res.render('horse/horseDetail', {
+    formData: horse,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-      res.render('horse/horseDetail', {
-        formData: horse,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/horse/dashboard');
-    }
-  }
+const editGet = asyncHandler(async (req, res) => {
+  const horse = await getHorseById(req.params.id);
+  horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
+  horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
+  res.render('horse/editHorse', {
+    countries: countries,
+    formData: horse,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-  editGet = async (req, res) => {
-    try {
-      const horse = await getHorseById(req.params.id);
-      horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
-      horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
-      res.render('horse/editHorse', {
-        countries: countries,
-        formData: horse,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/horse/dashboard');
-    }
-  }
+const editPost = asyncHandler(async (req, res) => {
+  const forerr = req.body;
+  forerr.box = req.body.BoxNr;
+  forerr.head = req.body.HeadNr;
 
-  editPost = async (req, res) => {
-    const forerr = req.body;
-    forerr.box = req.body.BoxNr;
-    forerr.head = req.body.HeadNr;
+  const boxNr = req.body.BoxNr;
+  const headNr = req.body.HeadNr;
+  delete req.body.BoxNr;
+  delete req.body.HeadNr;
 
-    try {
-      const boxNr = req.body.BoxNr;
-      const headNr = req.body.HeadNr;
-      delete req.body.BoxNr;
-      delete req.body.HeadNr;
+  const horse = await updateHorse(req.params.id, req.body, headNr, boxNr, res.locals.selectedEvent._id);
+  logger.db(`Horse ${horse.Horsename} updated by user ${req.user.username}.`);
+  req.session.successMessage = 'Horse updated successfully!';
+  res.redirect('/horse/dashboard');
+});
 
-      const horse = await updateHorse(req.params.id, req.body, headNr, boxNr, res.locals.selectedEvent._id);
-      logger.db(`Horse ${horse.Horsename} updated by user ${req.user.username}.`);
-      req.session.successMessage = 'Horse updated successfully!';
-      res.redirect('/horse/dashboard');
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
+const deleteNote = asyncHandler(async (req, res) => {
+  const horse = await deleteHorseNote(req.params.id, req.body.note);
+  logger.db(`Horse ${horse.name} note deleted by user ${req.user.username}.`);
+  res.status(200).json({ message: 'Note deleted successfully' });
+});
 
-      const errorMessage = err.errors
-        ? Object.values(err.errors).map(e => e.message).join(' ')
-        : (err.message || 'Server error');
+const newNotePost = asyncHandler(async (req, res) => {
+  const noteData = {
+    note: req.body.note,
+    user: req.user._id,
+    eventID: res.locals.selectedEvent._id
+  };
+  const horse = await addHorseNote(req.params.id, noteData);
+  logger.db(`Horse ${horse.HorseName} note created by user ${req.user.username}.`);
 
-      return res.render('horse/editHorse', {
-        countries: countries,
-        formData: { ...forerr, _id: req.params.id },
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: errorMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-    }
-  }
+  res.status(200).json({ message: 'Note added successfully!' });
+});
 
-  deleteNote = async (req, res) => {
-    try {
-      const horse = await deleteHorseNote(req.params.id, req.body.note);
-      logger.db(`Horse ${horse.name} note deleted by user ${req.user.username}.`);
-      res.status(200).json({ message: 'Note deleted successfully' });
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      res.status(500).json({ message: err.message || 'Server error' });
-    }
-  }
+const numbersGet = asyncHandler(async (req, res) => {
+  const horses = await getHorsesForEvent(res.locals.selectedEvent._id);
 
-  newNotePost = async (req, res) => {
-    try {
-      const noteData = {
-        note: req.body.note,
-        user: req.user._id,
-        eventID: res.locals.selectedEvent._id
-      };
-      const horse = await addHorseNote(req.params.id, noteData);
-      logger.db(`Horse ${horse.HorseName} note created by user ${req.user.username}.`);
+  horses.forEach(horse => {
+    horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
+    horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
+  });
+  res.render('horse/numberedit', {
+    horses,
+    rolePermissons: req.user?.role?.permissions,
+    failMessage: req.session.failMessage,
+    successMessage: req.session.successMessage,
+    user: req.user
+  });
+  req.session.failMessage = null;
+  req.session.successMessage = null;
+});
 
-      res.status(200).json({ message: 'Note added successfully!' });
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      res.status(500).json({ message: err.message || 'Server error' });
-    }
-  }
+const updateNums = asyncHandler(async (req, res) => {
+  const horse = await updateHorseNumbers(req.params.id, req.body.headNumber, req.body.boxNumber, res.locals.selectedEvent._id);
+  logger.db(`Horse ${horse.HorseName} numbers updated by user ${req.user.username}.`);
 
-  numbersGet = async (req, res) => {
-    try {
-      const horses = await getHorsesForEvent(res.locals.selectedEvent._id);
+  res.status(200).json({ message: 'Numbers updated successfully!' });
+});
 
-      horses.forEach(horse => {
-        horse.HeadNr = horse.HeadNr.filter(h => String(h.eventID) === String(res.locals.selectedEvent._id));
-        horse.BoxNr = horse.BoxNr.filter(b => String(b.eventID) === String(res.locals.selectedEvent._id));
-      });
-      res.render('horse/numberedit', {
-        horses,
-        rolePermissons: req.user?.role?.permissions,
-        failMessage: req.session.failMessage,
-        successMessage: req.session.successMessage,
-        user: req.user
-      });
-      req.session.failMessage = null;
-      req.session.successMessage = null;
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      return res.redirect('/entry/dashboard');
-    }
-  }
-
-  updateNums = async (req, res) => {
-    try {
-      const horse = await updateHorseNumbers(req.params.id, req.body.headNumber, req.body.boxNumber, res.locals.selectedEvent._id);
-      logger.db(`Horse ${horse.HorseName} numbers updated by user ${req.user.username}.`);
-
-      res.status(200).json({ message: 'Numbers updated successfully!' });
-    } catch (err) {
-      logger.error(err + " User: "+ req.user.username);
-      req.session.failMessage = err.message || 'Server error';
-      res.status(500).json({ message: err.message || 'Server error' });
-    }
-  }
-}
-
-export default new HorseController();
+export default {
+  renderNew,
+  createNew,
+  dashboard,
+  details,
+  editGet,
+  editPost,
+  deleteNote,
+  newNotePost,
+  numbersGet,
+  updateNums
+};
