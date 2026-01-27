@@ -6,7 +6,7 @@ import {
     createCard,
     updateCard,
     deleteCard
-} from '../services/adminCardData.js';
+} from '../DataServices/adminCardData.js';
 
 /**
  * @route GET /admin/newCard

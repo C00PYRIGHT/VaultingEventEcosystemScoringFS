@@ -1,5 +1,5 @@
 import { logger } from '../logger.js';
-import { getAdminDashboardData } from '../services/adminDashboardData.js';
+import { getAdminDashboardData } from '../DataServices/adminDashboardData.js';
 
 /**
  * @route GET /admin/dashboard

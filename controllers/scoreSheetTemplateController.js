@@ -10,7 +10,7 @@ import {
     parseJSONArrayField, 
     validateCategoriesAgegroup, 
     deleteImageFile 
-} from '../services/scoreSheetTemplateData.js';
+} from '../DataServices/scoreSheetTemplateData.js';
 
 /**
  * @route GET /scoresheets/dashboard

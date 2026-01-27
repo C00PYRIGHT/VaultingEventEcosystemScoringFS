@@ -1,7 +1,7 @@
 import { logger } from '../logger.js';
-import { calculateScore } from '../services/scoreCalculations.js';
+import { calculateScore } from '../LogicServices/scoreCalculations.js';
+import { syncScoreTable } from '../LogicServices/scoreSync.js';
 import { 
-    syncScoreTable, 
     getEventScoreSheets, 
     getScoreSheetById, 
     getEventScores, 
@@ -9,7 +9,7 @@ import {
     getSubmittedScoreSheets, 
     saveScoreSheet, 
     updateScoreSheet 
-} from '../services/scoreSheetData.js';
+} from '../DataServices/scoreSheetData.js';
 import { 
     getTimetablePartsByEvent, 
     getTimetablePartById, 
@@ -18,7 +18,7 @@ import {
     getTableMapping, 
     getEventById, 
     getScoreSheetTemplate 
-} from '../services/scoringData.js';
+} from '../DataServices/scoringData.js';
 
 /**
  * @route GET /scoring/office/dashboard

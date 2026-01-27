@@ -1,5 +1,5 @@
 import { logger } from '../logger.js';
-import { getDashCardsByType } from '../services/dashboardData.js';
+import { getDashCardsByType } from '../DataServices/dashboardData.js';
 
 /**
  * @route GET /dashboard

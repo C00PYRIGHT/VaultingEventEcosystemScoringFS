@@ -6,7 +6,7 @@ import {
   updateMapping,
   deleteMapping,
   getAllPermissions
-} from '../services/mappingData.js';
+} from '../DataServices/mappingData.js';
 
 class MappingController {
   renderNew = (req, res) => {

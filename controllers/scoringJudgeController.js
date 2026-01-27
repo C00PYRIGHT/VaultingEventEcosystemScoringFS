@@ -1,6 +1,7 @@
 import { logger } from '../logger.js';
-import { calculateScore } from '../services/scoreCalculations.js';
-import { syncScoreTable, getSubmittedScoreSheets, saveScoreSheet } from '../services/scoreSheetData.js';
+import { calculateScore } from '../LogicServices/scoreCalculations.js';
+import { syncScoreTable } from '../LogicServices/scoreSync.js';
+import { getSubmittedScoreSheets, saveScoreSheet } from '../DataServices/scoreSheetData.js';
 import { 
     getTodaysTimetable, 
     getTimetablePartsByDaily, 
@@ -11,7 +12,7 @@ import {
     getTableMapping, 
     getEventById, 
     getScoreSheetTemplate 
-} from '../services/scoringData.js';
+} from '../DataServices/scoringData.js';
 
 /**
  * @route GET /scoring

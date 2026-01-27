@@ -6,7 +6,7 @@ import {
     updateAlert,
     deleteAlert,
     getAlertFormData
-} from '../services/alertData.js';
+} from '../DataServices/alertData.js';
 
 /**
  * @route GET /alerts/new

@@ -9,7 +9,7 @@ import {
   addLungerIncident,
   getAllUsers,
   getAllPermissions
-} from '../services/lungerData.js';
+} from '../DataServices/lungerData.js';
 
 const countries = [
   "Afghanistan",

@@ -6,7 +6,7 @@ import {
     createPermission,
     updatePermission,
     deletePermission
-} from '../services/adminPermissionData.js';
+} from '../DataServices/adminPermissionData.js';
 
 /**
  * @route GET /admin/dashboard/permissions

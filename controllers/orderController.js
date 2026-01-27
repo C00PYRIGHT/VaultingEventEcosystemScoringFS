@@ -10,7 +10,7 @@ import {
     generateCompleteStartingOrder,
     updateTimetablePartStatus,
     parseCategoriesArray
-} from '../services/orderData.js';
+} from '../DataServices/orderData.js';
 
 class OrderController {
   editGet = async (req, res) => {

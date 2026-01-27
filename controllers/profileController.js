@@ -3,7 +3,7 @@ import {
     getUserById,
     updateUserProfile,
     getUserProfileFormData
-} from '../services/userData.js';
+} from '../DataServices/userData.js';
 
 /**
  * @route GET /profile/:id

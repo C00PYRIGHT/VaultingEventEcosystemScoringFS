@@ -1,9 +1,9 @@
 import { logger } from '../logger.js';
-import { FirstLevel, SecondLevel, TotalLevel } from '../services/resultCalculations.js';
+import { FirstLevel, SecondLevel, TotalLevel } from '../LogicServices/resultCalculations.js';
 import {
     getResultGroupsForResults,
     getResultGroupWithDetails
-} from '../services/resultGroupData.js';
+} from '../DataServices/resultGroupData.js';
 
 /**
  * @route GET /result/

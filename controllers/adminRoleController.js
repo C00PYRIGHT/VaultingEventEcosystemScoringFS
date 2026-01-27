@@ -7,7 +7,7 @@ import {
     createRole,
     updateRole,
     deleteRole
-} from '../services/adminRoleData.js';
+} from '../DataServices/adminRoleData.js';
 
 /**
  * @route GET /admin/dashboard/roles

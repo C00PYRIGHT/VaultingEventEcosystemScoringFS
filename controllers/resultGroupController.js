@@ -7,7 +7,7 @@ import {
     createResultGroup,
     deleteResultGroup,
     generateGroupsForActiveGenerators
-} from '../services/resultGroupData.js';
+} from '../DataServices/resultGroupData.js';
 
 /**
  * @route GET /result/groups/dashboard

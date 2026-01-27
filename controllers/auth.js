@@ -7,7 +7,7 @@ import {
     validateUserPassword,
     isTokenBlacklisted,
     blacklistToken
-} from '../services/authData.js';
+} from '../DataServices/authData.js';
 
 /**
  * @route POST v1/auth/register

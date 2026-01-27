@@ -5,7 +5,7 @@ import {
     getUserFormData,
     updateUser,
     inactivateUser
-} from '../services/adminUserData.js';
+} from '../DataServices/adminUserData.js';
 import User from "../models/User.js";
 
 /**

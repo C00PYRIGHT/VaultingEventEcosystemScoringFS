@@ -15,7 +15,7 @@ import {
     deleteTimetablePart,
     saveTimetablePartStartTime,
     getTimetablePartFormData
-} from '../services/dailyTimetableData.js';
+} from '../DataServices/dailyTimetableData.js';
 
 // Temporary model imports kept for compatibility with existing templates
 import DailyTimeTable from '../models/DailyTimeTable.js';

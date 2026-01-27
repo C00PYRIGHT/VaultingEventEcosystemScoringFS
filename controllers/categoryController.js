@@ -5,7 +5,7 @@ import {
     createCategory,
     updateCategory,
     deleteCategory
-} from '../services/categoryData.js';
+} from '../DataServices/categoryData.js';
 
 /**
  * @route GET /category/new

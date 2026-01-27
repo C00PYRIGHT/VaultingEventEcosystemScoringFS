@@ -9,7 +9,7 @@ import {
   selectEvent,
   getAllPermissions,
   getAllUsers
-} from '../services/eventData.js';
+} from '../DataServices/eventData.js';
 
 class EventController {
   renderNew = (req, res) => {

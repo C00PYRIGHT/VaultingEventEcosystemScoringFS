@@ -11,7 +11,7 @@ import {
     getAllEntriesWithVaulters,
     getAllPermissions,
     getAllUsers
-} from '../services/vaulterData.js';
+} from '../DataServices/vaulterData.js';
 
 const countries = [
     "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua & Deps",

@@ -6,7 +6,7 @@ import {
     updateCalcTemplate,
     deleteCalcTemplate,
     getCalcTemplateFormData
-} from '../services/resultCalcTemplateData.js';
+} from '../DataServices/resultCalcTemplateData.js';
 
 /**
  * @route GET /result/calcTemp/dashboard

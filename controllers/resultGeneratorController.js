@@ -7,7 +7,7 @@ import {
     updateGeneratorStatus,
     getGeneratorById,
     deleteGenerator
-} from '../services/resultGeneratorData.js';
+} from '../DataServices/resultGeneratorData.js';
 
 /**
  * @route GET /result/generator/dashboard

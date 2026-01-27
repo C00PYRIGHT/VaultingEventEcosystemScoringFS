@@ -119,60 +119,6 @@ export async function updateScoreSheet(scoresheetId, scoreSheetData, timetablePa
 }
 
 /**
- * Synchronize scores: create or update Score record based on all judge submissions
- */
-export async function syncScoreTable(timetablePartId, entryId, eventId) {
-  const score = await Score.find({
-    timetablepart: timetablePartId,
-    entry: entryId,
-    event: eventId
-  }).exec();
-
-  const timetablePart = await TimetablePart.findById(timetablePartId).exec();
-
-  const ScoreSheets = await ScoreSheet.find({
-    TimetablePartId: timetablePartId,
-    EntryId: entryId,
-    EventId: eventId
-  }).exec();
-
-  // Create new score if none exist and all judges have submitted
-  if (score.length === 0 && ScoreSheets.length === timetablePart.NumberOfJudges) {
-    const newScore = new Score({
-      timetablepart: timetablePartId,
-      entry: entryId,
-      event: eventId,
-      scoresheets: ScoreSheets.map(ss => ({ scoreId: ss._id, table: ss.Judge.table })),
-      TotalScore:
-        ScoreSheets.reduce((acc, curr) => acc + curr.totalScoreBE, 0) / ScoreSheets.length
-    });
-    await newScore.save();
-    logger.db(
-      `New score created for timetablePartId: ${timetablePartId}, EntryId: ${entryId}, EventId: ${eventId}`
-    );
-    return newScore;
-  } else if (score.length === 1) {
-    // Update existing score
-    const existingScore = score[0];
-    existingScore.scoresheets = ScoreSheets.map(ss => ({ scoreId: ss._id, table: ss.Judge.table }));
-    existingScore.TotalScore =
-      ScoreSheets.reduce((acc, curr) => acc + curr.totalScoreBE, 0) / ScoreSheets.length;
-    await existingScore.save();
-    logger.db(
-      `Score updated for timetablePartId: ${timetablePartId}, EntryId: ${entryId}, EventId: ${eventId}`
-    );
-    return existingScore;
-  } else if (score.length > 1) {
-    logger.error(
-      `Multiple scores found for timetablePartId: ${timetablePartId}, EntryId: ${entryId}, EventId: ${eventId}`
-    );
-    return null;
-  }
-
-  return null;
-}
-
-/**
  * Get all scores for an event with full relationships
  */
 export async function getEventScores(eventId) {

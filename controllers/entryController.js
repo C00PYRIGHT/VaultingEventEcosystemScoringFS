@@ -14,7 +14,7 @@ import {
     getHorsesForEvent,
     updateHorseVetStatus,
     getSelectedEvent
-} from '../services/entryData.js';
+} from '../DataServices/entryData.js';
 
 class EntryController {
   renderNew = async (req, res) => {

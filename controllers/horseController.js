@@ -10,7 +10,7 @@ import {
   updateHorseNumbers,
   getHorsesForEvent,
   getAllPermissions
-} from '../services/horseData.js';
+} from '../DataServices/horseData.js';
 
 const countries = [
   "Afghanistan",
