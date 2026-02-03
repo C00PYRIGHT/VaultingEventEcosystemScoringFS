@@ -12,7 +12,7 @@
           <input class="form-control mr-sm-2 rounded-0 rounded-start-1 border " type="search" placeholder="Search" aria-label="Search" id="search">
         </form>
         <div class="dropdown w-50 ">
-            <button class="btn btn-primary dropdown-toggle rounded-0 rounded-end-1 " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-primary dropdown-toggle rounded-0 rounded-end-1 " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Select search column">
               Select column
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdownMenu">
@@ -67,9 +67,9 @@
         </tbody>
     </table>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" horse="dialog" aria-labelledby="deleteModalLabel"
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
     aria-hidden="true" style="backdrop-filter: blur(5px);">
-    <div class="modal-dialog" horse="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content border-0 shadow">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Delete horse</h5>

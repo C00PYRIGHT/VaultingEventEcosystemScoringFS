@@ -1,0 +1,46 @@
+#search:focus {
+  outline: none;       /* Alap kék fókusz keret eltüntetése */
+  box-shadow: none;    /* Bootstrap glow eltüntetése */
+}
+
+mark {
+  all: unset;            /* minden stílust töröl */
+  background-color: yellow; /* megtartod a színt */
+}
+
+.nav-link-user {
+  display: block;
+  padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+  font-size: var(--bs-nav-link-font-size);
+  font-weight: var(--bs-nav-link-font-weight);
+  color: var(--bs-nav-link-color);
+  text-decoration: none;
+  color: var(--bs-nav-link-hover-color);
+
+  border: 0;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.nav-link-user:hover, .nav-link-user:focus {
+  color: var(--bs-nav-link-hover-color);
+}
+
+/* Icon badge */
+.icon-badge {
+  position: absolute;
+  top: 8px;
+  left: 25px;
+  width: 18px;
+  height: 18px;
+  padding: 5 5px;
+  font-size: 0.65rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(20%, -20%); /* finomhangolás ha kell */
+  box-sizing: content-box;
+}
+
+/* Ha csak a nav gombokra akarod: */
+.nav-link.has-badge { position: relative; padding-right: 1.6rem; }
