@@ -1,3 +1,5 @@
+
+
 # VaultX – Vaulting Scoring App
 
 **Thesis Project (BSc)**
@@ -5,10 +7,10 @@
 - **Student:** Bence Dániel
 - **Class:** Computer Science (Programtervező Informatikus)
 
-## Project Overview
+## Project overview
 VaultX is a scoring system for **equestrian vaulting** (lovastorna), a sport that combines elements of riding, gymnastics, and dance. Vaulters perform compulsory and freestyle exercises on a horse moving on a lunge line. The sport is regulated by the **FEI (Fédération Equestre Internationale)**, which defines competition rules, the judging system, and official procedures.
 
-Scoring is complex and is based on three main criteria:
+Scoring is complex and is based on four main criteria:
 - **Horse performance and movement quality**
 - **Technical execution of vaulting exercises**
 - **Overall impression and artistic value**
@@ -50,7 +52,7 @@ The scoring module must support:
 ├── controllers/           # Route controllers
 ├── DataServices/          # Database access layer
 ├── LogicServices/         # Scoring and calculation logic
-├── middleware/            # Validation, auth, error handling
+├── middleware/            # Auth, error handling
 ├── models/                # Mongoose models
 ├── routes/                # Express routes
 ├── static/                # Static assets (CSS, JS, images)
@@ -59,19 +61,8 @@ The scoring module must support:
 └── database/              # DB connection setup
 ```
 
-## Setup & Run
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
-2. **Create .env file** (see below)
-3. **Run the app**
-   ```bash
-   npm start
-   ```
-
 ## Environment Variables
-The following variables are required in `.env`:
+The following variables are required in `.env` or docker configuration:
 - `MONGODB_URI` – MongoDB connection string
 - `PORT` – HTTP port
 - `SECRET_ACCESS_TOKEN` – JWT signing secret
@@ -83,6 +74,3 @@ The following variables are required in `.env`:
 - The app uses a global middleware to inject **selected event**, **alerts**, and **version** info into views.
 - Logging is centralized through Winston with environment‑aware levels.
 - EJS templates use a shared layout in `views/layouts/layout.ejs`.
-
-## License
-This project is part of a university thesis and currently has no public license specified.
